@@ -6,7 +6,7 @@
         <additionalProperties>
           <property key="Bundle-Description" value="ONOS OSGi bundle archetype" />
           <property key="Bundle-Name" value="bde.sdn.agent" />
-          <property key="Include-Resource" value="client/rabbitstore=$MODULE_DIR$/src/main/resources/client/rabbitstore,client/client_cacerts.jks=$MODULE_DIR$/src/main/resources/client/client_cacerts.jks,OSGI-INF/blueprint/shell-config.xml=$MODULE_DIR$/src/main/resources/OSGI-INF/blueprint/shell-config.xml" />
+          <property key="Include-Resource" value="client_cacerts.jks=$MODULE_DIR$/src/main/resources/client_cacerts.jks" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -67,5 +67,6 @@
     <orderEntry type="library" name="Maven: org.onosproject:onos-core-common:1.9.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.apache.felix:org.apache.felix.scr:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.9" level="project" />
+    <orderEntry type="library" name="Maven: org.onosproject:org.apache.felix.scr.bnd:1.4.1-SNAPSHOT" level="project" />
   </component>
 </module>

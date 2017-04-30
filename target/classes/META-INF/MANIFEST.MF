@@ -1,8 +1,7 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1493524325700
+Bnd-LastModified: 1493536578474
 Build-Jdk: 1.8.0_101
 Built-By: root
-Bundle-Blueprint: OSGI-INF/blueprint/shell-config.xml
 Bundle-Description: ONOS OSGi bundle archetype
 Bundle-ManifestVersion: 2
 Bundle-Name: bde.sdn.agent
@@ -33,9 +32,9 @@ Import-Package: bde.sdn.agent.cli,bde.sdn.agent.config,com.fasterxml.jac
  tf;version="[1.9,2)",org.onosproject.net;version="[1.9,2)",org.onosproj
  ect.net.config;version="[1.9,2)",org.onosproject.net.config.basics;vers
  ion="[1.9,2)",org.onosproject.net.host;version="[1.9,2)",org.onosprojec
- t.net.topology;version="[1.9,2)",org.osgi.service.blueprint;version="[1
- .0.0,2.0.0)",org.osgi.service.component;version="[1.2,2)",org.slf4j;ver
- sion="[1.7,2)",rmq.sender.api,rmq.sender.util
+ t.net.topology;version="[1.9,2)",org.osgi.framework,org.osgi.service.co
+ mponent;version="[1.2,2)",org.slf4j;version="[1.7,2)",rmq.sender.api,rm
+ q.sender.util
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 Service-Component: OSGI-INF/bde.sdn.agent.config.impl.VplsConfigImpl.xml
  ,OSGI-INF/rmq.sender.impl.RmqServiceImpl.xml,OSGI-INF/service.ServiceCh

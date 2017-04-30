@@ -78,7 +78,7 @@ public class ServiceCheck {
                 groupedThreads("onos/deviceevents", "events-%d", log));
         topologyService.addListener(topologyListener);
         configService.addListener(configListener);
-        log.info("This is recieved:" + rmqService.consume());
+        //log.info("This is recieved:" + rmqService.consume());
         setupConnectivity(false);
         log.info("Service Check Started");
     }

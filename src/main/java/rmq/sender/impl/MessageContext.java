@@ -43,6 +43,10 @@ public class MessageContext implements Serializable {
         this.properties = checkNotNull(properties, NULL_ERR);
     }
 
+    public MessageContext(byte[] body) {
+        this.body = checkNotNull(body, NULL_ERR);
+        this.properties = null;
+    }
     /**
      * Returns the Message Properties Map.
      *

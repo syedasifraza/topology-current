@@ -16,11 +16,11 @@
 package rmq.sender.api;
 
 import org.onosproject.event.Event;
+import org.onosproject.event.ListenerService;
 
-public interface RmqService {
-
+public interface RmqService
+        extends ListenerService<RmqEvents, RmqMsgListener> {
     public void publish(Event<? extends Enum, ?> event);
-
     public String consume();
 
 }
