@@ -107,11 +107,7 @@
             <artifactId>org.apache.felix.scr</artifactId>
             <version>1.8.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.onosproject</groupId>
-            <artifactId>onlab-osgi</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
-        </dependency>
+
         <dependency>
             <groupId>org.onosproject</groupId>
             <artifactId>org.apache.felix.scr.bnd</artifactId>

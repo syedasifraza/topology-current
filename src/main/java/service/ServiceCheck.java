@@ -1,12 +1,9 @@
 package service;
 
-import bde.sdn.agent.config.VplsConfigService;
+
 import com.google.common.collect.Multimap;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
+import init.config.InitConfigService;
+import org.apache.felix.scr.annotations.*;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.net.ConnectPoint;
@@ -17,10 +14,11 @@ import org.onosproject.net.config.NetworkConfigService;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.topology.TopologyEvent;
 import org.onosproject.net.topology.TopologyListener;
-import org.onosproject.net.topology.TopologyService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rmq.sender.api.RmqEvents;
+import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
 
 import java.util.concurrent.ExecutorService;
@@ -46,11 +44,10 @@ public class ServiceCheck {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected RmqService rmqService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected TopologyService topologyService;
+
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected VplsConfigService vplsConfigService;
+    protected InitConfigService vplsConfigService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HostService hostService;
@@ -60,12 +57,11 @@ public class ServiceCheck {
 
     protected ExecutorService eventExecutor;
 
-    private final TopologyListener topologyListener =
-            new InternalTopologyListener();
-
     private final InternalNetworkConfigListener configListener =
             new InternalNetworkConfigListener();
 
+    private final RmqMsgListener rmqMsgListener =
+            new InternalRmqMsgListener();
 
 
 
@@ -76,25 +72,30 @@ public class ServiceCheck {
         appId = coreService.registerApplication(APP_NAME);
         eventExecutor = newSingleThreadScheduledExecutor(
                 groupedThreads("onos/deviceevents", "events-%d", log));
-        topologyService.addListener(topologyListener);
+
         configService.addListener(configListener);
-        //log.info("This is recieved:" + rmqService.consume());
+        rmqService.addListener(rmqMsgListener);
         setupConnectivity(false);
         log.info("Service Check Started");
     }
 
     @Deactivate
     protected void deactivate() {
-        topologyService.removeListener(topologyListener);
         log.info("Stopped");
     }
 
 
     private void setupConnectivity(boolean isNetworkConfigEvent) {
-
         Multimap<DeviceId, ConnectPoint> multimap = vplsConfigService.gatewaysInfo();
+        log.info("Gateway ID: " + multimap);
+    }
 
-        log.info("Gateways IDs: " + multimap);
+    private void msgRecieved() {
+        String consume;
+        consume = rmqService.consume();
+        log.info(consume);
+        Multimap<DeviceId, ConnectPoint> multimap = vplsConfigService.gatewaysInfo();
+        log.info("Gateway ID: " + multimap);
 
     }
 
@@ -104,7 +105,7 @@ public class ServiceCheck {
     private class InternalNetworkConfigListener implements NetworkConfigListener {
         @Override
         public void event(NetworkConfigEvent event) {
-            if (event.configClass() == VplsConfigService.CONFIG_CLASS) {
+            if (event.configClass() == InitConfigService.CONFIG_CLASS) {
                 log.debug(NET_CONF_EVENT, event.configClass());
                 switch (event.type()) {
                     case CONFIG_ADDED:
@@ -119,19 +120,33 @@ public class ServiceCheck {
         }
     }
 
+    private class InternalRmqMsgListener implements RmqMsgListener {
+
+        @Override
+        public void event(RmqEvents rmqEvents) {
+
+            switch (rmqEvents.type()) {
+                case RMQ_MSG_RECIEVED:
+                    log.info("dispatch");
+                    msgRecieved();
+                    break;
+                default:
+                    log.info("No Msg recieved");
+                    break;
+            }
+        }
+    }
+
     private class InternalTopologyListener implements TopologyListener {
 
         @Override
         public void event(TopologyEvent event) {
             if (event == null) {
-                log.info("Topology event is null.");
+                log.debug("Topology event is null.");
                 return;
             }
-            log.info("Topology event generated.");
-            rmqService.publish(event);
-            log.info("Now going to consume messages");
+            //rmqService.publish(event);
+
         }
     }
-
-
 }

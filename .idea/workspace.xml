@@ -2,34 +2,50 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4802c881-4118-4aef-b87a-de441490b87c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_onosproject_org_apache_felix_scr_bnd_1_4_1_SNAPSHOT.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/rabbitmq.properties" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/rmq/sender/api/RmqConnectionManager.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/rmq/sender/impl/MQSender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/OSGI-INF/blueprint/shell-config.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/client/client_cacerts.jks" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/client/rabbitstore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/OSGI-INF/blueprint/shell-config.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/client/client_cacerts.jks" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/client/rabbitstore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/api/RmqConnectionManager.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/impl/MQSender$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/impl/MQSender.class" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/init/config/InitAppConfig.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/VplsCommand.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/VplsCommandEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsCommandCompleter.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsNameCompleter.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsOptArgCompleter.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/package-info.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsAppConfig.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfigService.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/OSGI-INF/bde.sdn.agent.config.impl.VplsConfigImpl.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/VplsCommand$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/VplsCommand.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/VplsCommandEnum.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/completer/VplsCommandCompleter$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/completer/VplsCommandCompleter.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/completer/VplsNameCompleter.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/completer/VplsOptArgCompleter$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/completer/VplsOptArgCompleter.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/Constants.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/VplsAppConfig.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/VplsConfig.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/VplsConfigService.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/impl/VplsConfigImpl$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/impl/VplsConfigImpl$2.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/impl/VplsConfigImpl$InternalNetworkConfigListener.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/config/impl/VplsConfigImpl.class" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/package-info.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/InitConfigService.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/Constants.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/Constants.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfig.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/InitConfig.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/VplsConfigImpl.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/impl/InitConfigImpl.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/package-info.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/impl/package-info.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/package-info.java" afterPath="$PROJECT_DIR$/src/main/java/init/config/package-info.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/bde.sdn.agent-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/target/bde.sdn.agent-1.0-SNAPSHOT.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/bde.sdn.agent-1.0-SNAPSHOT.oar" afterPath="$PROJECT_DIR$/target/bde.sdn.agent-1.0-SNAPSHOT.oar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/VplsCommand.class" afterPath="$PROJECT_DIR$/target/classes/bde/sdn/agent/cli/VplsCommand.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/api/RmqService.class" afterPath="$PROJECT_DIR$/target/classes/rmq/sender/api/RmqService.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/impl/MessageContext.class" afterPath="$PROJECT_DIR$/target/classes/rmq/sender/impl/MessageContext.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/rmq/sender/impl/RmqServiceImpl.class" afterPath="$PROJECT_DIR$/target/classes/rmq/sender/impl/RmqServiceImpl.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/service/ServiceCheck$1.class" afterPath="$PROJECT_DIR$/target/classes/service/ServiceCheck$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/service/ServiceCheck$InternalNetworkConfigListener.class" afterPath="$PROJECT_DIR$/target/classes/service/ServiceCheck$InternalNetworkConfigListener.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/service/ServiceCheck$InternalTopologyListener.class" afterPath="$PROJECT_DIR$/target/classes/service/ServiceCheck$InternalTopologyListener.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/service/ServiceCheck.class" afterPath="$PROJECT_DIR$/target/classes/service/ServiceCheck.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/oar/m2/topology-current/bde.sdn.agent/1.0-SNAPSHOT/bde.sdn.agent-1.0-SNAPSHOT.jar" afterPath="$PROJECT_DIR$/target/oar/m2/topology-current/bde.sdn.agent/1.0-SNAPSHOT/bde.sdn.agent-1.0-SNAPSHOT.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/rmq/sender/api/RmqService.java" afterPath="$PROJECT_DIR$/src/main/java/rmq/sender/api/RmqService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/rmq/sender/impl/MessageContext.java" afterPath="$PROJECT_DIR$/src/main/java/rmq/sender/impl/MessageContext.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/rmq/sender/impl/RmqServiceImpl.java" afterPath="$PROJECT_DIR$/src/main/java/rmq/sender/impl/RmqServiceImpl.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/service/ServiceCheck.java" afterPath="$PROJECT_DIR$/src/main/java/service/ServiceCheck.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/target/classes/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/OSGI-INF/rmq.sender.impl.RmqServiceImpl.xml" afterPath="$PROJECT_DIR$/target/classes/OSGI-INF/rmq.sender.impl.RmqServiceImpl.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/topology-current.iml" afterPath="$PROJECT_DIR$/topology-current.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/OSGI-INF/service.ServiceCheck.xml" afterPath="$PROJECT_DIR$/target/classes/OSGI-INF/service.ServiceCheck.xml" />
     </list>
     <ignored path="topology-current.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,40 +66,7 @@
     <favorites_list name="topology-current" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="RmqServiceImpl.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/rmq/sender/impl/RmqServiceImpl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="252" column="67" selection-start-line="252" selection-start-column="67" selection-end-line="252" selection-end-column="67" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ServiceCheck.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/service/ServiceCheck.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.829646">
-              <caret line="98" column="5" selection-start-line="98" selection-start-column="5" selection-end-line="98" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MessageContext.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/rmq/sender/impl/MessageContext.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -114,9 +97,6 @@
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/vpls/config/impl/VplsConfigImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/onosproject/vpls/cli/VplsCommand.java" />
         <option value="$PROJECT_DIR$/src/main/resources/OSGI-INF/blueprint/shell-config.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsAppConfig.java" />
-        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfigService.java" />
-        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/VplsConfigImpl.java" />
         <option value="$PROJECT_DIR$/src/main/java/rmq/sender/api/RmqConnectionManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/rmq/sender/api/RmqService.java" />
         <option value="$PROJECT_DIR$/src/main/java/rmq/sender/impl/MQSender.java" />
@@ -125,9 +105,19 @@
         <option value="$PROJECT_DIR$/app.xml" />
         <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/VplsCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/sender/impl/RmqServiceImpl.java" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/rmq/sender/impl/RmqServiceImpl.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfigService.java" />
+        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/VplsConfigImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfig.java" />
+        <option value="$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsAppConfig.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/VplsConfig.java" />
         <option value="$PROJECT_DIR$/src/main/java/service/ServiceCheck.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/Constants.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/impl/InitConfigImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/InitAppConfig.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/InitConfig.java" />
+        <option value="$PROJECT_DIR$/src/main/java/init/config/InitConfigService.java" />
       </list>
     </option>
   </component>
@@ -228,92 +218,6 @@
               <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="service" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sender" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sender" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="impl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="topology-current" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
@@ -328,6 +232,9 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="service" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/resources" />
@@ -617,7 +524,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24938272" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24938272" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -646,66 +553,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/VplsCommandEnum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13274336">
-          <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsOptArgCompleter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3329646">
-          <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsNameCompleter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13274336">
-          <caret line="28" column="13" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/completer/VplsCommandCompleter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13274336">
-          <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#712#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/service/package-info.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -714,42 +561,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31526548">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#716#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/topology-current.iml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.46460176">
-          <caret line="28" column="13" selection-start-line="28" selection-start-column="13" selection-end-line="28" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#2867#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsConfigService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.074115">
-          <caret line="139" column="4" selection-start-line="139" selection-start-column="4" selection-end-line="139" selection-end-column="52" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -766,16 +582,6 @@
         <state vertical-scroll-proportion="0.32386363">
           <caret line="19" column="38" selection-start-line="19" selection-start-column="38" selection-end-line="19" selection-end-column="38" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/cli/VplsCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="285" column="44" selection-start-line="285" selection-start-column="44" selection-end-line="285" selection-end-column="44" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -845,38 +651,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9683099">
-          <caret line="55" column="34" selection-start-line="55" selection-start-column="30" selection-end-line="55" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/VplsAppConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="48" column="25" selection-start-line="48" selection-start-column="25" selection-end-line="48" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28207964">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/bde/sdn/agent/config/impl/VplsConfigImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.27323">
-          <caret line="64" column="13" selection-start-line="64" selection-start-column="13" selection-end-line="64" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/rabbitmq.properties">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1659292">
@@ -887,27 +661,100 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/rmq/sender/impl/MessageContext.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="0.14933628">
           <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.5961537">
+          <caret line="108" column="8" selection-start-line="108" selection-start-column="8" selection-end-line="108" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/rmq/sender/impl/RmqServiceImpl.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1659292">
+          <caret line="39" column="31" selection-start-line="39" selection-start-column="31" selection-end-line="39" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/package-info.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.01659292">
+          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/service/ServiceCheck.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.9745575">
+          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.21570796">
+          <caret line="13" column="51" selection-start-line="13" selection-start-column="51" selection-end-line="13" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/impl/package-info.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="252" column="67" selection-start-line="252" selection-start-column="67" selection-end-line="252" selection-end-column="67" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/InitConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/service/ServiceCheck.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/InitConfigService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.829646">
-          <caret line="98" column="5" selection-start-line="98" selection-start-column="5" selection-end-line="98" selection-end-column="5" />
-          <folding />
+        <state vertical-scroll-proportion="0.28207964">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/InitAppConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1659292">
+          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/init/config/impl/InitConfigImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.0409293">
+          <caret line="123" column="8" selection-start-line="123" selection-start-column="7" selection-end-line="123" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2497#2527#0" expanded="true" />
+            <element signature="e#2706#2707#0" expanded="true" />
+            <element signature="e#2772#2773#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
