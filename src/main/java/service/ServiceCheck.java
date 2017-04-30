@@ -47,7 +47,7 @@ public class ServiceCheck {
 
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected InitConfigService vplsConfigService;
+    protected InitConfigService initConfigService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected HostService hostService;
@@ -86,7 +86,7 @@ public class ServiceCheck {
 
 
     private void setupConnectivity(boolean isNetworkConfigEvent) {
-        Multimap<DeviceId, ConnectPoint> multimap = vplsConfigService.gatewaysInfo();
+        Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
     }
 
@@ -94,7 +94,7 @@ public class ServiceCheck {
         String consume;
         consume = rmqService.consume();
         log.info(consume);
-        Multimap<DeviceId, ConnectPoint> multimap = vplsConfigService.gatewaysInfo();
+        Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
 
     }
