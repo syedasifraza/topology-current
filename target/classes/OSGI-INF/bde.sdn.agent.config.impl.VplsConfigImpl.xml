@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="bde.sdn.agent.config.impl.VplsConfigImpl" activate="active" deactivate="deactive">
+    <implementation class="bde.sdn.agent.config.impl.VplsConfigImpl"/>
+    <service servicefactory="false">
+        <provide interface="bde.sdn.agent.config.VplsConfigService"/>
+    </service>
+    <property name="service.pid" value="bde.sdn.agent.config.impl.VplsConfigImpl"/>
+    <reference name="registry" interface="org.onosproject.net.config.NetworkConfigRegistry" cardinality="1..1" policy="static" bind="bindRegistry" unbind="unbindRegistry"/>
+    <reference name="coreService" interface="org.onosproject.core.CoreService" cardinality="1..1" policy="static" bind="bindCoreService" unbind="unbindCoreService"/>
+    <reference name="interfaceService" interface="org.onosproject.incubator.net.intf.InterfaceService" cardinality="1..1" policy="static" bind="bindInterfaceService" unbind="unbindInterfaceService"/>
+    <reference name="interfaceAdminService" interface="org.onosproject.incubator.net.intf.InterfaceAdminService" cardinality="1..1" policy="static" bind="bindInterfaceAdminService" unbind="unbindInterfaceAdminService"/>
+    <reference name="configService" interface="org.onosproject.net.config.NetworkConfigService" cardinality="1..1" policy="static" bind="bindConfigService" unbind="unbindConfigService"/>
+</scr:component>
