@@ -17,6 +17,7 @@ import org.onosproject.net.topology.TopologyListener;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pathmanager.api.BdePathService;
 import rmq.sender.api.RmqEvents;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
@@ -44,7 +45,8 @@ public class ServiceCheck {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected RmqService rmqService;
 
-
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected BdePathService getpath;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected InitConfigService initConfigService;
@@ -96,12 +98,11 @@ public class ServiceCheck {
         log.info(consume);
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
+        getpath.calcPath(consume);
 
     }
 
-    /**
-     * Listener for VPLS configuration events.
-     */
+
     private class InternalNetworkConfigListener implements NetworkConfigListener {
         @Override
         public void event(NetworkConfigEvent event) {
