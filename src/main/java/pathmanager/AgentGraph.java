@@ -16,7 +16,7 @@ public class AgentGraph {
     public static class Edge {
         private final Logger log = LoggerFactory.getLogger(getClass());
         public final String v1, v2;
-        public final int dist;
+        public final long dist;
         public Edge(String v1, String v2, int dist) {
             this.v1 = v1;
             this.v2 = v2;
@@ -81,7 +81,7 @@ public class AgentGraph {
 
         //another pass to set neighbouring vertices
         for (Edge e : edges) {
-            graph.get(e.v1).neighbours.put(graph.get(e.v2), e.dist);
+            graph.get(e.v1).neighbours.put(graph.get(e.v2), (int) e.dist);
             //graph.get(e.v2).neighbours.put(graph.get(e.v1), e.dist); // also do this for an undirected graph
             //System.out.println("Q :" + graph.get(e.v1).neighbours);
         }

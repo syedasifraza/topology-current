@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pathmanager.AgentGraph;
 import pathmanager.api.BdePathService;
+import service.CostService;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -42,6 +43,9 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected TopologyService topologyService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected CostService costService;
 
     @Activate
     protected void activate(ComponentContext context) {
@@ -82,10 +86,10 @@ public class BdePathServiceImpl implements BdePathService {
 
             edges.forEachRemaining(n -> sd.put(n.src().toString(), n.dst().toString()));
             for (Map.Entry<String, String> entry : sd.entries()) {
-                Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(), 40);
+                Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(),
+                        (int) costService.retriveCost(entry.getKey(), entry.getValue()));
                 i++;
             }
-
 
             final String START = dvcOneId.toString();
             final String END = dvcTwoId.toString();
@@ -93,10 +97,7 @@ public class BdePathServiceImpl implements BdePathService {
             g.dijkstra(START);
             g.printPath(END);
 
-
-
         } catch (IOException e) {
-            log.info("Exception here");
             e.printStackTrace();
         }
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="service.SetCost" activate="activate" deactivate="deactivate">
+    <implementation class="service.SetCost"/>
+    <service servicefactory="false">
+        <provide interface="service.CostService"/>
+    </service>
+    <property name="service.pid" value="service.SetCost"/>
+    <reference name="topologyService" interface="org.onosproject.net.topology.TopologyService" cardinality="1..1" policy="static" bind="bindTopologyService" unbind="unbindTopologyService"/>
+    <reference name="deviceService" interface="org.onosproject.net.device.DeviceService" cardinality="1..1" policy="static" bind="bindDeviceService" unbind="unbindDeviceService"/>
+</scr:component>
