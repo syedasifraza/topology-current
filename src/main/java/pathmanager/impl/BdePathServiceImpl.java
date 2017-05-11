@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.IpAddress;
@@ -60,11 +58,10 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Override
     public void calcPath(String src) {
-        JsonParser parser = new JsonParser();
-        JsonObject json = (JsonObject) parser.parse(src);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode dtnIp;
+
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode dtnIp;
             dtnIp = mapper.readTree(src).get("ip");
             IpAddress oneIp = IpAddress.valueOf(dtnIp.asText());
             DeviceId dvcOneId = hostService.getHostsByIp(oneIp).iterator()
@@ -96,11 +93,10 @@ public class BdePathServiceImpl implements BdePathService {
             AgentGraph g = new AgentGraph(Graph);
             g.dijkstra(START);
             g.printPath(END);
-
+            log.info("Devices in Path {}", g.getDvcInPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 }

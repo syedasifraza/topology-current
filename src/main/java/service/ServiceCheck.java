@@ -2,6 +2,9 @@ package service;
 
 
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
 import org.onosproject.core.ApplicationId;
@@ -92,12 +95,11 @@ public class ServiceCheck {
     }
 
     private void msgRecieved() {
-        String consume;
-        consume = rmqService.consume();
-        log.info(consume);
+        JsonConverter(rmqService.consume());
+        //log.info(consume);
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
-        getpath.calcPath(consume);
+        //getpath.calcPath(consume);
 
     }
 
@@ -147,6 +149,17 @@ public class ServiceCheck {
             }
             //rmqService.publish(event);
 
+        }
+    }
+
+    private void JsonConverter (String src) {
+        JsonParser parser = new JsonParser();
+        JsonObject json = (JsonObject) parser.parse(src);
+        JsonArray jsonArray = (JsonArray) json.get("dtns");
+        log.info("Command = " + json.get("cmd"));
+        for(int i=0; i<jsonArray.size(); i++) {
+            log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
+            getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
         }
     }
 }

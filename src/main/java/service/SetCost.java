@@ -70,8 +70,8 @@ public class SetCost implements CostService {
 
     }
 
-    private Long CalcPortSpeed(Link link) {
-        Long portSpeed;
+    private long CalcPortSpeed(Link link) {
+        long portSpeed;
         portSpeed = (deviceService.getPort(link.src().deviceId(),
                 link.src().port()).portSpeed());
         return portSpeed;

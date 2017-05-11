@@ -3,14 +3,12 @@ package pathmanager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class AgentGraph {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
+    public static Collection<String> tempMap = new ArrayList<>();
 
     /** One edge of the graph (only used by Graph constructor) */
     public static class Edge {
@@ -32,6 +30,7 @@ public class AgentGraph {
         public Vertex previous = null;
         public final Map<Vertex, Integer> neighbours = new HashMap();
 
+
         public Vertex(String name)
         {
             this.name = name;
@@ -42,6 +41,7 @@ public class AgentGraph {
             if (this == this.previous)
             {
                 log.info("{}", this.name);
+                tempMap.add(this.name);
             }
             else if (this.previous == null)
             {
@@ -49,9 +49,12 @@ public class AgentGraph {
             }
             else
             {
+
                 this.previous.printPath();
                 log.info(" -> {}({})", this.name, this.dist);
+                tempMap.add(this.name);
             }
+            //log.info("Collection {}", tempMap);
         }
 
         public int compareTo(Vertex other)
@@ -152,9 +155,14 @@ public class AgentGraph {
         }
 
         graph.get(endName).printPath();
-        System.out.println();
+
+        //System.out.println();
     }
     /** Prints the path from the source to every vertex (output order is not guaranteed) */
+    public Collection<String> getDvcInPath() {
+        return tempMap;
+    }
+
     public void printAllPaths() {
         for (Vertex v : graph.values()) {
             v.printPath();
