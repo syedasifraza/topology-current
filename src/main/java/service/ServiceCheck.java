@@ -16,6 +16,7 @@ import org.onosproject.net.config.NetworkConfigListener;
 import org.onosproject.net.config.NetworkConfigService;
 import org.onosproject.net.topology.TopologyEvent;
 import org.onosproject.net.topology.TopologyListener;
+import org.onosproject.net.topology.TopologyService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,9 @@ public class ServiceCheck {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected NetworkConfigService configService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected TopologyService topologyService;
+
     protected ExecutorService eventExecutor;
 
     private final InternalNetworkConfigListener configListener =
@@ -68,6 +72,9 @@ public class ServiceCheck {
 
     private final RmqMsgListener rmqMsgListener =
             new InternalRmqMsgListener();
+
+    private final TopologyListener topologyListener =
+            new InternalTopologyListener();
 
 
     private ApplicationId appId;
@@ -77,10 +84,11 @@ public class ServiceCheck {
         appId = coreService.registerApplication(APP_NAME);
         eventExecutor = newSingleThreadScheduledExecutor(
                 groupedThreads("onos/deviceevents", "events-%d", log));
-
+        topologyService.addListener(topologyListener);
         configService.addListener(configListener);
         rmqService.addListener(rmqMsgListener);
         setupConnectivity(false);
+        rmqService.consume();
         log.info("Service Check Started");
     }
 
@@ -96,7 +104,8 @@ public class ServiceCheck {
     }
 
     private void msgRecieved() {
-        JsonConverter(rmqService.consume());
+        rmqService.consume();
+        //JsonConverter(rmqService.consume());
         //log.info(consume);
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
@@ -131,7 +140,7 @@ public class ServiceCheck {
 
             switch (rmqEvents.type()) {
                 case RMQ_MSG_RECIEVED:
-                    log.info("dispatch");
+                    log.info("Dispatch");
                     msgRecieved();
                     break;
                 default:
@@ -149,7 +158,8 @@ public class ServiceCheck {
                 log.debug("Topology event is null.");
                 return;
             }
-            //rmqService.publish(event);
+            log.info("In Topo Event");
+            rmqService.publish(event);
 
         }
     }
@@ -193,7 +203,7 @@ public class ServiceCheck {
         middle.add(obj1);
         outer.add("dtns", middle);
         body = bytesOf(outer);
-        rmqService.publish(body);
+        //rmqService.publish(body);
         log.info("Json to send {}", outer.toString());
     }
 

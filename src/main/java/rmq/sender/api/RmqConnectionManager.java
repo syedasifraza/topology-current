@@ -13,15 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package rmq.sender.api;
 
-import org.onosproject.event.Event;
-import org.onosproject.event.ListenerService;
+import com.rabbitmq.client.Channel;
 
-public interface RmqService extends ListenerService<RmqEvents, RmqMsgListener> {
+/**
+ * Interface for declaring a start, publisher, consumer and stop api's for rabbitmq communication.
+ */
+public interface RmqConnectionManager {
+    /**
+     * Establishes connection with RabbitMQ server.
+     */
+    void start();
 
-    public void publish(Event<? extends Enum, ?> event);
+    /**
+     * Publisher usded by SDN agent to provide required information to outside applications by using RabbitMQ server.
+     */
+    void publisher();
 
-    public void consume();
+    /**
+     * Releases RabbitMQ server's connection and channels.
+     */
+    void stop();
+
+
+    Channel start1();
+
 
 }
