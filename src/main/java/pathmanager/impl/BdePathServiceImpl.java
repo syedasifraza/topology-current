@@ -119,6 +119,15 @@ public class BdePathServiceImpl implements BdePathService {
         return temp;
     }
 
+    @Override
+    public void setupPath(String pathId) {
+        //log.info("pathID recieved from json msg {}", pathId);
+        //log.info("pathId recieved from saved {}", saveCalcPath.getPathInfo().keySet().iterator().next().toString());
+        if(pathId.equals(saveCalcPath.getPathInfo().keySet().iterator().next().toString().replaceAll("\"", ""))) {
+            log.info("Now I started to install path on devices");
+        }
+    }
+
     public void pathLinks(Map<Collection<String>, Double> devices) {
         String previousDevice = null;
         Set<TopologyEdge> edges = topologyService.getGraph(

@@ -14,8 +14,6 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.config.NetworkConfigEvent;
 import org.onosproject.net.config.NetworkConfigListener;
 import org.onosproject.net.config.NetworkConfigService;
-import org.onosproject.net.topology.TopologyEvent;
-import org.onosproject.net.topology.TopologyListener;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +74,7 @@ public class ServiceCheck {
     protected void activate(ComponentContext context) {
         appId = coreService.registerApplication(APP_NAME);
         eventExecutor = newSingleThreadScheduledExecutor(
-                groupedThreads("onos/deviceevents", "events-%d", log));
+                groupedThreads("onos/sdnagentevents", "events-%d", log));
 
         configService.addListener(configListener);
         rmqService.addListener(rmqMsgListener);
@@ -141,18 +139,6 @@ public class ServiceCheck {
         }
     }
 
-    private class InternalTopologyListener implements TopologyListener {
-
-        @Override
-        public void event(TopologyEvent event) {
-            if (event == null) {
-                log.debug("Topology event is null.");
-                return;
-            }
-            //rmqService.publish(event);
-
-        }
-    }
 
     private void JsonConverter(String messegeRecieved) {
         Map<String, Double> publishPathInfo = new HashMap<>();
@@ -160,41 +146,51 @@ public class ServiceCheck {
         JsonObject json = (JsonObject) parser.parse(messegeRecieved);
         JsonArray jsonArray = (JsonArray) json.get("dtns");
         log.info("Command = " + json.get("cmd"));
-        if (json.get("cmd").toString().equals("\"sdn_probe\"")) {
+        if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_probe")) {
             for (int i = 0; i < jsonArray.size(); i++) {
                 log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
                 getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
-                publishPathInfo.put(jsonArray.get(i).getAsJsonObject().toString(),
+                publishPathInfo.put(jsonArray.get(i).getAsJsonObject().get("ip").toString(),
                         getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString()));
             }
-            JsonPublishCoverter();
+            //publishPathInfo.put("10.0.0.2", 90.00);
+            JsonPublishCoverter(json.get("taskId").toString().replaceAll("\"", ""),
+                    publishPathInfo);
         }
-        else if (json.get("cmd").equals("sdn_reserve")) {
-            log.info("Reserve command");
+        else if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_reserve")) {
+            //log.info("Reserve command {}", messegeRecieved);
+            getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""));
         }
         else {
-            log.info("command not found");
+            log.info("command not found {}", messegeRecieved);
         }
 
     }
 
-    private void JsonPublishCoverter() {
+    private void JsonPublishCoverter(String taskId, Map<String, Double> dtns) {
         byte[] body = null;
         JsonObject outer = new JsonObject();
-        JsonObject obj = new JsonObject();
-        JsonObject obj1 = new JsonObject();
         JsonArray middle = new JsonArray();
+        log.info("DTNs size {}", dtns.size());
+        outer.addProperty("cmd", "sdn_response");
+        outer.addProperty("taskId", taskId);
+        for(Map.Entry items : dtns.entrySet()) {
+            JsonObject obj = new JsonObject();
+            //log.info("Keys IPs {}", items.getKey().toString().replaceAll("\"", ""));
+            //log.info("Value {}", items.getValue().toString());
+            obj.addProperty("ip", items.getKey().toString().replaceAll("\"", ""));
+            obj.addProperty("AvailBW", items.getValue().toString());
+            middle.add(obj);
+        }
 
-        outer.addProperty("cmd", "sdn_probe_response");
-        outer.addProperty("taskId", "1");
-        obj.addProperty("ip", "10.0.0.1");
-        obj1.addProperty("ip", "10.0.0.2");
-        middle.add(obj);
-        middle.add(obj1);
+
         outer.add("dtns", middle);
         body = bytesOf(outer);
         rmqService.publish(body);
-        log.info("Json to send {}", outer.toString());
+        log.info("Publish msg {}", outer);
+        //log.info("CMD recieved {}", cmd);
+        //log.info("TaskID recieved {}", taskId);
+        //log.info("DTNs Information {}", dtns.keySet().iterator().next());
     }
 
     private byte[] bytesOf(JsonObject jo) {

@@ -7,7 +7,9 @@ import java.util.Map;
  * Created by root on 5/12/17.
  */
 public class SaveCalcPath {
+
     private static Map<String, Map<Collection<String>, Double>> calcPathInfo;
+
     public static Map<String, Map<Collection<String>, Double>>  getPathInfo() {
         return calcPathInfo;
     }
