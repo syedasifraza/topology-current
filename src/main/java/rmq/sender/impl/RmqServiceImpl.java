@@ -27,23 +27,20 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rmq.sender.api.RmqEvents;
+import rmq.sender.api.RmqManagerService;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyStore;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 import static org.onlab.util.Tools.groupedThreads;
@@ -70,15 +67,21 @@ public class RmqServiceImpl
     private final BlockingQueue<MessageContext> msgInQueue =
             new LinkedBlockingQueue<>(1);
 
-    private String exchangeName;
-    private String routingKey;
-    private String queueName;
+    private RmqManagerService rmqManagerConsumer;
+
+    private RmqManagerService rmqManagerPublisher;
+
+    private String exchangeName_c;
+    private String routingKey_c;
+    private String queueName_c;
+    private String exchangeName_p;
+    private String routingKey_p;
+    private String queueName_p;
     private String url;
     private String type;
 
-    private ExecutorService executorService;
-    private Connection conn;
-    private Channel channel;
+    private Channel channel_c;
+    private Channel channel_p;
 
 
 
@@ -127,11 +130,20 @@ public class RmqServiceImpl
         type = prop.getProperty("amqp.type.info");
 
         //consumer setting from properties file
-        exchangeName = prop.getProperty("amqp.consumer.exchange.info");
-        routingKey = prop.getProperty("amqp.consumer.routingkey.info");
-        queueName = prop.getProperty("amqp.consumer.queue.info");
+        exchangeName_c = prop.getProperty("amqp.consumer.exchange.info");
+        routingKey_c = prop.getProperty("amqp.consumer.routingkey.info");
+        queueName_c = prop.getProperty("amqp.consumer.queue.info");
 
-        log.info("URL {}", url);
+        //publisher setting from properties file
+        exchangeName_p = prop.getProperty("amqp.publisher.exchange.info");
+        routingKey_p = prop.getProperty("amqp.publisher.routingkey.info");
+        queueName_p = prop.getProperty("amqp.publisher.queue.info");
+
+        //log.info("URL {}", url);
+        rmqManagerConsumer = new RmqManagerImpl(msgOutQueue, exchangeName_c,
+                routingKey_c,queueName_c, url, type);
+        rmqManagerPublisher = new RmqManagerImpl(msgOutQueue, exchangeName_p,
+                routingKey_p,queueName_p, url, type);
             /*correlationId = "onos->rmqserver";
             exchangeName =  "onos_exchg_wr_to_rmqs";
             routingKey = "abc.zxy";
@@ -141,11 +153,11 @@ public class RmqServiceImpl
 
         try {
             InputStream is = configUrl.openStream();
-            start(is);
+            InputStream is1 = configUrl.openStream();
+            channel_c = rmqManagerConsumer.start(is);
             log.info("Consumer connection established");
-            /*start(is, exchangeName_p,
-                    routingKey_p, queueName_p, channel_p, conn_p);
-            log.info("Publisher connection established");*/
+            channel_p = rmqManagerPublisher.start(is1);
+            log.info("Publisher connection established");
         } catch (Exception e) {
             log.error(ExceptionUtils.getFullStackTrace(e));
             throw new RuntimeException(e);
@@ -153,13 +165,12 @@ public class RmqServiceImpl
 
         consumer();
 
-
-
     }
 
     private void uninitializeProducers() {
         log.info("RMQ Serivce Stoped");
-        stop();
+        rmqManagerConsumer.stop();
+        rmqManagerPublisher.stop();
     }
 
     private byte[] bytesOf(JsonObject jo) {
@@ -195,7 +206,7 @@ public class RmqServiceImpl
     public void publisher() {
         try {
             MessageContext input = msgOutQueue.poll();
-            channel.basicPublish(exchangeName, routingKey,
+            channel_p.basicPublish(exchangeName_p, routingKey_p,
                     new AMQP.BasicProperties.Builder()
                             .correlationId(correlationId).build(),
                     input.getBody());
@@ -208,7 +219,7 @@ public class RmqServiceImpl
 
     public void consumer() {
         try {
-            Consumer consumer = new DefaultConsumer(channel) {
+            Consumer consumer = new DefaultConsumer(channel_c) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope,
                                            AMQP.BasicProperties properties, byte[] body)
@@ -220,7 +231,7 @@ public class RmqServiceImpl
                     log.info(" [x] Recieved after post: '{}'", message);
                 }
             };
-            channel.basicConsume(queueName, true, consumer);
+            channel_c.basicConsume(queueName_c, true, consumer);
         } catch (Exception e) {
             log.error(E_PUBLISH_CHAN, e);
         }
@@ -250,7 +261,7 @@ public class RmqServiceImpl
     }
 
 
-    public void setExecutorService(ExecutorService executorService) {
+    /*public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
 
@@ -289,7 +300,7 @@ public class RmqServiceImpl
              * autoDelete - false
              * arguments  - null
              */
-            channel.queueDeclare(queueName, true, false, true, null);
+    /*        channel.queueDeclare(queueName, true, false, true, null);
             channel.queueBind(queueName, exchangeName, routingKey);
         } catch (Exception e) {
             log.error(E_CREATE_CHAN, e);
@@ -308,7 +319,7 @@ public class RmqServiceImpl
             log.error("Timeout exception in closing the rabbit MQ connection",
                     e);
         }
-    }
+    }*/
 
 
     public static java.util.Properties getProp(ComponentContext context) {

@@ -167,7 +167,7 @@ public class ServiceCheck {
                 publishPathInfo.put(jsonArray.get(i).getAsJsonObject().toString(),
                         getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString()));
             }
-            //JsonPublishCoverter();
+            JsonPublishCoverter();
         }
         else if (json.get("cmd").equals("sdn_reserve")) {
             log.info("Reserve command");
