@@ -5,4 +5,5 @@ package pathmanager.api;
  */
 public interface BdePathService {
     public void calcPath(String src);
+    public Double getPathBW(String ipAddress);
 }

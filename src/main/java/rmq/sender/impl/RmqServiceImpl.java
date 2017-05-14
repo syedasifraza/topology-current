@@ -17,32 +17,18 @@ package rmq.sender.impl;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.*;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.Service;
+import org.apache.felix.scr.annotations.*;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.core.CoreService;
 import org.onosproject.event.AbstractListenerManager;
-import org.onosproject.event.Event;
-import org.onosproject.net.topology.TopologyEvent;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rmq.sender.api.RmqEvents;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
-import rmq.sender.util.MQUtil;
-import org.osgi.service.component.ComponentContext;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -88,10 +74,13 @@ public class RmqServiceImpl
     private String routingKey;
     private String queueName;
     private String url;
+    private String type;
 
     private ExecutorService executorService;
     private Connection conn;
     private Channel channel;
+
+
 
 
     private String correlationId;
@@ -123,25 +112,40 @@ public class RmqServiceImpl
     }
 
     private void initializeProducers(ComponentContext context) {
-        try {
-            correlationId = "onos->rmqserver";
-            exchangeName =  "onos_exchg_wr_to_rmqs";
-            routingKey = "abc.zxy";
-            queueName = "onos_recieve_queue";
-            url = "amqps://yosemite.fnal.gov:5671/%2F";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         java.util.Properties prop = getProp(context);
         URL configUrl;
 
         configUrl = context.getBundleContext().getBundle()
                 .getResource("client_cacerts.jks");
 
+        //log.info("Properties {}", prop.getProperty("amqp.sender.queue.info"));
+        correlationId = prop.getProperty("amqp.col.id.info");
+        url = prop.getProperty("amqp.protocol.info") + "://" +
+                prop.getProperty("amqp.hostname.ip.info") + ":" +
+                prop.getProperty("amqp.port.info") +
+                prop.getProperty("amqp.vhost.info") + "%2F";
+        type = prop.getProperty("amqp.type.info");
+
+        //consumer setting from properties file
+        exchangeName = prop.getProperty("amqp.consumer.exchange.info");
+        routingKey = prop.getProperty("amqp.consumer.routingkey.info");
+        queueName = prop.getProperty("amqp.consumer.queue.info");
+
+        log.info("URL {}", url);
+            /*correlationId = "onos->rmqserver";
+            exchangeName =  "onos_exchg_wr_to_rmqs";
+            routingKey = "abc.zxy";
+            queueName = "onos_recieve_queue";*/
+            //url = "amqps://yosemite.fnal.gov:5671/%2F";
+
+
         try {
             InputStream is = configUrl.openStream();
             start(is);
+            log.info("Consumer connection established");
+            /*start(is, exchangeName_p,
+                    routingKey_p, queueName_p, channel_p, conn_p);
+            log.info("Publisher connection established");*/
         } catch (Exception e) {
             log.error(ExceptionUtils.getFullStackTrace(e));
             throw new RuntimeException(e);
@@ -162,23 +166,10 @@ public class RmqServiceImpl
         return jo.toString().getBytes();
     }
 
-    /**
-     * Publishes Device, Topology &amp; Link event message to MQ server.
-     *
-     * @param event Event received from the corresponding sender like topology, device etc
-     */
+
     @Override
-    public void publish(Event<? extends Enum, ?> event) {
-        byte[] body = null;
-        if (null == event) {
-            log.info("Captured event is null...");
-            return;
-        }
-        if (event instanceof TopologyEvent) {
-            body = bytesOf(MQUtil.json((TopologyEvent) event));
-        } else {
-            log.info("Invalid event: '{}'", event);
-        }
+    public void publish(byte[] body) {
+
         processAndPublishMessage(body);
     }
 
@@ -206,7 +197,7 @@ public class RmqServiceImpl
             MessageContext input = msgOutQueue.poll();
             channel.basicPublish(exchangeName, routingKey,
                     new AMQP.BasicProperties.Builder()
-                            .correlationId("onos->rmqserver").build(),
+                            .correlationId(correlationId).build(),
                     input.getBody());
             String message1 = new String(input.getBody(), "UTF-8");
             log.info(" [x] Sent: '{}'", message1);
@@ -290,7 +281,7 @@ public class RmqServiceImpl
                 conn = factory.newConnection();
             }
             channel = conn.createChannel();
-            channel.exchangeDeclare(exchangeName, "topic", true);
+            channel.exchangeDeclare(exchangeName, type, true);
             /*
              * Setting the following parameters to queue
              * durable    - true
@@ -298,7 +289,7 @@ public class RmqServiceImpl
              * autoDelete - false
              * arguments  - null
              */
-            channel.queueDeclare(this.queueName, true, false, true, null);
+            channel.queueDeclare(queueName, true, false, true, null);
             channel.queueBind(queueName, exchangeName, routingKey);
         } catch (Exception e) {
             log.error(E_CREATE_CHAN, e);

@@ -17,12 +17,12 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pathmanager.AgentGraph;
+import pathmanager.SaveCalcPath;
 import pathmanager.api.BdePathService;
 import service.CostService;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by root on 4/10/17.
@@ -45,6 +45,8 @@ public class BdePathServiceImpl implements BdePathService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected CostService costService;
 
+    SaveCalcPath saveCalcPath= new SaveCalcPath();
+
     @Activate
     protected void activate(ComponentContext context) {
 
@@ -58,7 +60,7 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Override
     public void calcPath(String src) {
-
+        Map<String, Map<Collection<String>, Double>> pathInfo = new HashMap<>();
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode dtnIp;
@@ -93,9 +95,53 @@ public class BdePathServiceImpl implements BdePathService {
             AgentGraph g = new AgentGraph(Graph);
             g.dijkstra(START);
             g.printPath(END);
-            log.info("Devices in Path {}", g.getDvcInPath());
+            pathInfo.put(mapper.readTree(src).get("ip").toString(), g.getDvcInPath());
+            saveCalcPath.setPathInfo(pathInfo);
+            log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
+            //log.info("Devices in Path {}", g.getDvcInPath());
+            //pathLinks(g.getDvcInPath());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public Double getPathBW(String ipAddress) {
+        double temp = 0.0;
+        if(saveCalcPath.getPathInfo().containsKey(ipAddress)) {
+            log.info("Direct Value {}", saveCalcPath.getPathInfo().get(ipAddress).values());
+            temp = saveCalcPath.getPathInfo().get(ipAddress).values().iterator().next();
+        }
+
+
+        //log.info("Values IP {}", saveCalcPath.getPathInfo().values().iterator().next().values());
+        return temp;
+    }
+
+    public void pathLinks(Map<Collection<String>, Double> devices) {
+        String previousDevice = null;
+        Set<TopologyEdge> edges = topologyService.getGraph(
+                topologyService.currentTopology()).getEdges();
+
+        for(Collection<String> item : devices.keySet()) {
+            for(String it :  item) {
+                for(TopologyEdge edgeIterator : edges) {
+                    //log.info("previous src {} current src {} ", previousDevice,
+                    //        edges.next().src().deviceId());
+                    if(edgeIterator.src().deviceId().toString().equals(previousDevice) &&
+                            edgeIterator.dst().deviceId().toString().equals(it)) {
+                        log.info("Path Links {}", edgeIterator.link());
+                        break;
+                    }
+
+                }
+                previousDevice = it;
+            }
+
+
+            log.info("Cost of path {}", devices.get(item));
+
         }
 
     }

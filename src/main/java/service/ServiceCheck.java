@@ -24,6 +24,8 @@ import rmq.sender.api.RmqEvents;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -68,7 +70,6 @@ public class ServiceCheck {
             new InternalRmqMsgListener();
 
 
-
     private ApplicationId appId;
 
     @Activate
@@ -100,6 +101,7 @@ public class ServiceCheck {
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
         //getpath.calcPath(consume);
+
 
     }
 
@@ -152,14 +154,51 @@ public class ServiceCheck {
         }
     }
 
-    private void JsonConverter (String src) {
+    private void JsonConverter(String messegeRecieved) {
+        Map<String, Double> publishPathInfo = new HashMap<>();
         JsonParser parser = new JsonParser();
-        JsonObject json = (JsonObject) parser.parse(src);
+        JsonObject json = (JsonObject) parser.parse(messegeRecieved);
         JsonArray jsonArray = (JsonArray) json.get("dtns");
         log.info("Command = " + json.get("cmd"));
-        for(int i=0; i<jsonArray.size(); i++) {
-            log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
-            getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
+        if (json.get("cmd").toString().equals("\"sdn_probe\"")) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
+                getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
+                publishPathInfo.put(jsonArray.get(i).getAsJsonObject().toString(),
+                        getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString()));
+            }
+            //JsonPublishCoverter();
         }
+        else if (json.get("cmd").equals("sdn_reserve")) {
+            log.info("Reserve command");
+        }
+        else {
+            log.info("command not found");
+        }
+
+    }
+
+    private void JsonPublishCoverter() {
+        byte[] body = null;
+        JsonObject outer = new JsonObject();
+        JsonObject obj = new JsonObject();
+        JsonObject obj1 = new JsonObject();
+        JsonArray middle = new JsonArray();
+
+        outer.addProperty("cmd", "sdn_probe_response");
+        outer.addProperty("taskId", "1");
+        obj.addProperty("ip", "10.0.0.1");
+        obj1.addProperty("ip", "10.0.0.2");
+        middle.add(obj);
+        middle.add(obj1);
+        outer.add("dtns", middle);
+        body = bytesOf(outer);
+        rmqService.publish(body);
+        log.info("Json to send {}", outer.toString());
+    }
+
+    private byte[] bytesOf(JsonObject jo) {
+        return jo.toString().getBytes();
     }
 }
+

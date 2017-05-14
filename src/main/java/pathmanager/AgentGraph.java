@@ -9,6 +9,8 @@ public class AgentGraph {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
     public static Collection<String> tempMap = new ArrayList<>();
+    public static double cost;
+    public Map<Collection<String>, Double> dvcWithCost = new HashMap<>();
 
     /** One edge of the graph (only used by Graph constructor) */
     public static class Edge {
@@ -53,6 +55,7 @@ public class AgentGraph {
                 this.previous.printPath();
                 log.info(" -> {}({})", this.name, this.dist);
                 tempMap.add(this.name);
+                cost = this.dist;
             }
             //log.info("Collection {}", tempMap);
         }
@@ -159,8 +162,13 @@ public class AgentGraph {
         //System.out.println();
     }
     /** Prints the path from the source to every vertex (output order is not guaranteed) */
-    public Collection<String> getDvcInPath() {
-        return tempMap;
+    public Map<Collection<String>, Double> getDvcInPath() {
+        tempMap.iterator().forEachRemaining(n -> {
+            log.info("print collection {}", n);
+        });
+        dvcWithCost.put(tempMap, cost);
+        //return tempMap;
+        return dvcWithCost;
     }
 
     public void printAllPaths() {
