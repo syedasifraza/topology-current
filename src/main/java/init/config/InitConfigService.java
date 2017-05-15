@@ -1,6 +1,7 @@
 package init.config;
 
 import com.google.common.collect.Multimap;
+import org.onosproject.core.ApplicationId;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 
@@ -11,6 +12,7 @@ public interface InitConfigService {
 
 
     Multimap<DeviceId, ConnectPoint> gatewaysInfo();
+    ApplicationId getAppId();
 
 
 

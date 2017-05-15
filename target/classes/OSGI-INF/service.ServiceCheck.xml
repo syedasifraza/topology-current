@@ -8,4 +8,5 @@
     <reference name="initConfigService" interface="init.config.InitConfigService" cardinality="1..1" policy="static" bind="bindInitConfigService" unbind="unbindInitConfigService"/>
     <reference name="costService" interface="service.CostService" cardinality="1..1" policy="static" bind="bindCostService" unbind="unbindCostService"/>
     <reference name="configService" interface="org.onosproject.net.config.NetworkConfigService" cardinality="1..1" policy="static" bind="bindConfigService" unbind="unbindConfigService"/>
+    <reference name="agentFlowService" interface="flowManager.api.AgentFlowService" cardinality="1..1" policy="static" bind="bindAgentFlowService" unbind="unbindAgentFlowService"/>
 </scr:component>

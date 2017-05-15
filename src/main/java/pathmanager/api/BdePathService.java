@@ -6,5 +6,7 @@ package pathmanager.api;
 public interface BdePathService {
     public void calcPath(String src);
     public Double getPathBW(String ipAddress);
-    public void setupPath(String pathId);
+    public boolean checkPathId(String pathId);
+    public void setupPath(String pathId, String srcIP, String dstIP,
+                          String srcPort, String dstPort, Double rate);
 }

@@ -102,6 +102,11 @@ public class InitConfigImpl implements InitConfigService {
         return multimap;
     }
 
+    @Override
+    public ApplicationId getAppId() {
+        return gatewayAppId;
+    }
+
 
     private void loadConfiguration() {
         loadAppId();

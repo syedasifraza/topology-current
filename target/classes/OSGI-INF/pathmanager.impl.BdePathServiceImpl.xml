@@ -9,4 +9,5 @@
     <reference name="initConfigService" interface="init.config.InitConfigService" cardinality="1..1" policy="static" bind="bindInitConfigService" unbind="unbindInitConfigService"/>
     <reference name="topologyService" interface="org.onosproject.net.topology.TopologyService" cardinality="1..1" policy="static" bind="bindTopologyService" unbind="unbindTopologyService"/>
     <reference name="costService" interface="service.CostService" cardinality="1..1" policy="static" bind="bindCostService" unbind="unbindCostService"/>
+    <reference name="agentFlowService" interface="flowManager.api.AgentFlowService" cardinality="1..1" policy="static" bind="bindAgentFlowService" unbind="unbindAgentFlowService"/>
 </scr:component>

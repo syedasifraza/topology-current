@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import flowManager.api.AgentFlowService;
 import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
 import org.onosproject.core.ApplicationId;
@@ -59,6 +60,9 @@ public class ServiceCheck {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected NetworkConfigService configService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected AgentFlowService agentFlowService;
+
     protected ExecutorService eventExecutor;
 
     private final InternalNetworkConfigListener configListener =
@@ -79,6 +83,7 @@ public class ServiceCheck {
         configService.addListener(configListener);
         rmqService.addListener(rmqMsgListener);
         setupConnectivity(false);
+        agentFlowService.removeFlowsByAppId();
         log.info("Service Check Started");
     }
 
@@ -144,22 +149,36 @@ public class ServiceCheck {
         Map<String, Double> publishPathInfo = new HashMap<>();
         JsonParser parser = new JsonParser();
         JsonObject json = (JsonObject) parser.parse(messegeRecieved);
-        JsonArray jsonArray = (JsonArray) json.get("dtns");
         log.info("Command = " + json.get("cmd"));
         if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_probe")) {
+            JsonArray jsonArray = (JsonArray) json.get("dtns");
             for (int i = 0; i < jsonArray.size(); i++) {
                 log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
                 getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
                 publishPathInfo.put(jsonArray.get(i).getAsJsonObject().get("ip").toString(),
-                        getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString()));
+                        getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString().replaceAll("\"", "")));
             }
             //publishPathInfo.put("10.0.0.2", 90.00);
             JsonPublishCoverter(json.get("taskId").toString().replaceAll("\"", ""),
                     publishPathInfo);
         }
         else if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_reserve")) {
-            //log.info("Reserve command {}", messegeRecieved);
-            getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""));
+            log.info("Reserve command {}", messegeRecieved);
+
+            if(getpath.checkPathId(json.get("pathId").toString().replaceAll("\"", ""))
+                    == true) {
+                //log.info("Condition True");
+                getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""),
+                        json.get("dtns").getAsJsonObject().get("srcIp").toString().replaceAll("\"", ""),
+                        json.get("dtns").getAsJsonObject().get("dstIp").toString().replaceAll("\"", ""),
+                        json.get("dtns").getAsJsonObject().get("srcPort").toString().replaceAll("\"", ""),
+                        json.get("dtns").getAsJsonObject().get("dstPort").toString().replaceAll("\"", ""),
+                        json.get("dtns").getAsJsonObject().get("rate").getAsDouble());
+
+            }
+            else {
+                log.info("Path ID not found");
+            }
         }
         else {
             log.info("command not found {}", messegeRecieved);

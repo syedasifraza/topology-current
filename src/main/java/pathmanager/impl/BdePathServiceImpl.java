@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import flowManager.api.AgentFlowService;
 import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.IpAddress;
 import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
+import org.onosproject.net.HostId;
+import org.onosproject.net.PortNumber;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.topology.TopologyEdge;
 import org.onosproject.net.topology.TopologyService;
@@ -44,6 +47,9 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected CostService costService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected AgentFlowService agentFlowService;
 
     SaveCalcPath saveCalcPath= new SaveCalcPath();
 
@@ -95,7 +101,7 @@ public class BdePathServiceImpl implements BdePathService {
             AgentGraph g = new AgentGraph(Graph);
             g.dijkstra(START);
             g.printPath(END);
-            pathInfo.put(mapper.readTree(src).get("ip").toString(), g.getDvcInPath());
+            pathInfo.put(mapper.readTree(src).get("ip").toString().replaceAll("\"", ""), g.getDvcInPath());
             saveCalcPath.setPathInfo(pathInfo);
             log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
             //log.info("Devices in Path {}", g.getDvcInPath());
@@ -110,7 +116,7 @@ public class BdePathServiceImpl implements BdePathService {
     public Double getPathBW(String ipAddress) {
         double temp = 0.0;
         if(saveCalcPath.getPathInfo().containsKey(ipAddress)) {
-            log.info("Direct Value {}", saveCalcPath.getPathInfo().get(ipAddress).values());
+            //log.info("Direct Value {}", saveCalcPath.getPathInfo().get(ipAddress).values());
             temp = saveCalcPath.getPathInfo().get(ipAddress).values().iterator().next();
         }
 
@@ -120,38 +126,99 @@ public class BdePathServiceImpl implements BdePathService {
     }
 
     @Override
-    public void setupPath(String pathId) {
+    public boolean checkPathId(String pathId) {
         //log.info("pathID recieved from json msg {}", pathId);
         //log.info("pathId recieved from saved {}", saveCalcPath.getPathInfo().keySet().iterator().next().toString());
         if(pathId.equals(saveCalcPath.getPathInfo().keySet().iterator().next().toString().replaceAll("\"", ""))) {
-            log.info("Now I started to install path on devices");
+            //log.info("Now I started to install path on devices");
+            return true;
         }
+        return false;
     }
 
-    public void pathLinks(Map<Collection<String>, Double> devices) {
+    @Override
+    public void setupPath(String pathId, String srcIP, String dstIP,
+                          String srcPort, String dstPort, Double rate) {
+        //log.info("src IP {} \n dst IP {} \n srcPort {}\n dstPort {}\n rate {}",
+        //        srcIP, dstIP, srcPort, dstPort, rate);
+        Multimap<DeviceId, Map<PortNumber, PortNumber>> portInfo = ArrayListMultimap.create();
+        log.info("Path of given pathID {}", saveCalcPath.getPathInfo().get(pathId).keySet().
+                iterator().next().iterator().next());
+        IpAddress hostIp = IpAddress.valueOf(pathId);
+        HostId hostId = hostService.getHostsByIp(hostIp).iterator().next().id();
+        PortNumber hostPort = hostService.getHost(hostId).location().port();
+        //log.info("Host Port number {}", hostService.getHost(hostId).location().port());
+
+        portInfo = pathLinks(saveCalcPath.getPathInfo().get(pathId).keySet().
+                iterator().next(), hostPort);
+
+        for(DeviceId items: portInfo.keySet()) {
+            PortNumber inPort;
+            PortNumber outPort;
+
+            for(int i=0; i < portInfo.get(items).size(); i++) {
+                inPort = portInfo.get(items).iterator().next().keySet().iterator().next();
+                outPort = portInfo.get(items).iterator().next().get(inPort);
+                log.info("Device {}, inport {}, outport {}", items, inPort, outPort);
+                agentFlowService.installFlows(items, inPort, outPort, srcIP,
+                        dstIP, srcPort, dstPort, rate);
+            }
+
+
+        }
+
+        log.info("Iam out of for loop");
+
+    }
+
+    public Multimap<DeviceId, Map<PortNumber, PortNumber>> pathLinks(Collection<String> devices,
+                                                                     PortNumber hostPort) {
         String previousDevice = null;
         Set<TopologyEdge> edges = topologyService.getGraph(
                 topologyService.currentTopology()).getEdges();
+        Multimap<DeviceId, Map<PortNumber, PortNumber>> portsMap = ArrayListMultimap.create();
+        Map<PortNumber, PortNumber> ppMap=new HashMap<>();
+        PortNumber inport = hostPort;
+        DeviceId gwDevice = null;
+        Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
+        log.info("Iam in for loop of pathLinks function \n Devices size {}", devices.size());
 
-        for(Collection<String> item : devices.keySet()) {
-            for(String it :  item) {
-                for(TopologyEdge edgeIterator : edges) {
+        if(devices.size() == 1) {
+            gwDevice = multimap.keys().iterator().next();
+            ppMap.put(inport,multimap.get(gwDevice).iterator().next().port());
+            portsMap.put(gwDevice, ppMap);
+
+        }
+        else {
+            for (String item : devices) {
+
+                for (TopologyEdge edgeIterator : edges) {
                     //log.info("previous src {} current src {} ", previousDevice,
                     //        edges.next().src().deviceId());
-                    if(edgeIterator.src().deviceId().toString().equals(previousDevice) &&
-                            edgeIterator.dst().deviceId().toString().equals(it)) {
-                        log.info("Path Links {}", edgeIterator.link());
+                    if (edgeIterator.src().deviceId().toString().equals(previousDevice) &&
+                            edgeIterator.dst().deviceId().toString().equals(item)) {
+                        Map<PortNumber, PortNumber> pMap = new HashMap<>();
+                        log.info("OutPort Number {}", edgeIterator.link().src().port());
+                        log.info("InPort Number {}", edgeIterator.link().dst().port());
+
+                        pMap.put(inport, edgeIterator.link().src().port());
+                        inport = edgeIterator.link().dst().port();
+                        gwDevice = edgeIterator.link().dst().deviceId();
+                        portsMap.put(edgeIterator.link().src().deviceId(), pMap);
                         break;
                     }
 
                 }
-                previousDevice = it;
+                previousDevice = item;
+
             }
+            ppMap.put(inport, multimap.get(gwDevice).iterator().next().port());
 
-
-            log.info("Cost of path {}", devices.get(item));
-
+            portsMap.put(gwDevice, ppMap);
         }
+
+        //log.info("\n In Out ports: {} ", portsMap);
+        return  portsMap;
 
     }
 }
