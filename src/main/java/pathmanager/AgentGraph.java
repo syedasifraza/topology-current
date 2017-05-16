@@ -8,9 +8,9 @@ import java.util.*;
 public class AgentGraph {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Vertex> graph; // mapping of vertex names to Vertex objects, built from a set of Edges
-    public static Collection<String> tempMap = new ArrayList<>();
+    public static Set<String> tempMap = new LinkedHashSet<>();
     public static double cost;
-    public Map<Collection<String>, Double> dvcWithCost = new HashMap<>();
+    //public Map<Collection<String>, Double> dvcWithCost = new HashMap<>();
 
     /** One edge of the graph (only used by Graph constructor) */
     public static class Edge {
@@ -56,8 +56,9 @@ public class AgentGraph {
                 log.info(" -> {}({})", this.name, this.dist);
                 tempMap.add(this.name);
                 cost = this.dist;
+
             }
-            //log.info("Collection {}", tempMap);
+            log.info("Collection {}", tempMap);
         }
 
         public int compareTo(Vertex other)
@@ -163,13 +164,20 @@ public class AgentGraph {
     }
     /** Prints the path from the source to every vertex (output order is not guaranteed) */
     public Map<Collection<String>, Double> getDvcInPath() {
+        Map<Collection<String>, Double> dvcWithCost = new HashMap<>();
         tempMap.iterator().forEachRemaining(n -> {
             log.info("print collection {}", n);
         });
         dvcWithCost.put(tempMap, cost);
         //return tempMap;
+        log.info("tempMap {}",tempMap);
         return dvcWithCost;
     }
+
+    public void cleanPath() {
+        tempMap.clear();
+    }
+
 
     public void printAllPaths() {
         for (Vertex v : graph.values()) {

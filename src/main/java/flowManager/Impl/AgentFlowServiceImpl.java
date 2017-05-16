@@ -6,19 +6,21 @@ import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.IpAddress;
 import org.onlab.packet.IpPrefix;
 import org.onosproject.core.ApplicationId;
-import org.onosproject.core.CoreService;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.flow.*;
+import org.onosproject.net.meter.*;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
 
 @Component(immediate = true)
 @Service
 public class AgentFlowServiceImpl implements AgentFlowService {
 
-    public static final int PRIORITY=10;
+    public static final int PRIORITY=500;
     public static final int TIME_OUT=120;
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -30,7 +32,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     protected InitConfigService initConfigService;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected CoreService coreService;
+    protected MeterService meterService;
 
     ApplicationId appId;
     @Activate
@@ -52,7 +54,33 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         log.info("\n Device IDs {}, srcIP {}, dstIP {}, srcPort {}, dstPort {}, rate {}",
                 deviceId, srcIP, dstIP, srcPort, dstPort, rate);
 
+        pushFlows(deviceId, inPort, outPort,
+                srcIP, dstIP);
+        pushFlows(deviceId, outPort, inPort,
+                dstIP, srcIP);
 
+        Band band = DefaultBand.builder()
+                .ofType(Band.Type.DROP)
+                .burstSize(rate.longValue())
+                .withRate(rate.longValue())
+                .build();
+        MeterRequest meterRequest = DefaultMeterRequest.builder()
+                .forDevice(deviceId)
+                .fromApp(appId)
+                .withUnit(Meter.Unit.KB_PER_SEC)
+                .withBands(Collections.singleton(band))
+                .add();
+
+        //meterService.submit(meterRequest);
+    }
+
+    @Override
+    public void removeFlowsByAppId() {
+        flowRuleService.removeFlowRulesById(appId);
+    }
+
+    public void pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
+                          String srcIP, String dstIP) {
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
                 .setOutput(outPort)
                 .build();
@@ -77,14 +105,8 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .makePermanent()
                 .fromApp(appId)
                 .build();
-
         rules.add(addRule);
-
         flowRuleService.apply(rules.build());
-    }
-
-    @Override
-    public void removeFlowsByAppId() {
-        flowRuleService.removeFlowRulesById(appId);
+        log.info("Flow id {} @ device Id {}", addRule.id().toString(), deviceId);
     }
 }

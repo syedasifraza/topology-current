@@ -9,9 +9,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by root on 5/1/17.
@@ -27,6 +25,8 @@ public class SetCost implements CostService {
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected DeviceService deviceService;
+
+    Map<Link, Long> m = new HashMap<>();
 
     @Activate
     protected void activate(ComponentContext context) {
@@ -56,12 +56,45 @@ public class SetCost implements CostService {
 
     }
 
+    @Override
+    public void changeCost(Collection<String> devices, Double rate) {
+        log.info("In change cost {}", rate);
+
+        CostOfLinks cl = new CostOfLinks();
+
+        Set<TopologyEdge> edges = topologyService.getGraph(
+                topologyService.currentTopology()).getEdges();
+        Link links;
+
+        String previousDevice = null;
+        for (String item : devices) {
+
+            for (TopologyEdge edgeIterator : edges) {
+
+                if ((edgeIterator.src().deviceId().toString().equals(previousDevice) &&
+                        edgeIterator.dst().deviceId().toString().equals(item)) ||
+                        (edgeIterator.src().deviceId().toString().equals(item) &&
+                                edgeIterator.dst().deviceId().toString().equals(previousDevice))) {
+                    log.info("Counting links {}", edgeIterator.link());
+                    m.replace(edgeIterator.link(),
+                            (m.get(edgeIterator.link()) - rate.longValue()));
+
+                }
+
+            }
+            previousDevice = item;
+
+        }
+        log.info("{}", cl.getCost());
+
+    }
+
     public void CostAtStatup() {
 
         CostOfLinks cl = new CostOfLinks();
         Iterator<TopologyEdge> edges = topologyService.getGraph(
                 topologyService.currentTopology()).getEdges().iterator();
-        Map<Link, Long> m = new HashMap<>();
+        //Map<Link, Long> m = new HashMap<>();
         edges.forEachRemaining(n -> {
             m.put(n.link(), CalcPortSpeed(n.link()));
             cl.setCost(m);

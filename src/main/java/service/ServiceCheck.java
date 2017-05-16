@@ -1,6 +1,8 @@
 package service;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -23,6 +25,7 @@ import rmq.sender.api.RmqEvents;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -154,7 +157,14 @@ public class ServiceCheck {
             JsonArray jsonArray = (JsonArray) json.get("dtns");
             for (int i = 0; i < jsonArray.size(); i++) {
                 log.info("DTNs = " + jsonArray.get(i).getAsJsonObject().get("ip"));
-                getpath.calcPath(jsonArray.get(i).getAsJsonObject().toString());
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode dtnIp = null;
+                try {
+                    dtnIp = mapper.readTree(jsonArray.get(i).getAsJsonObject().toString()).get("ip");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                getpath.calcPath(dtnIp.asText());
                 publishPathInfo.put(jsonArray.get(i).getAsJsonObject().get("ip").toString(),
                         getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString().replaceAll("\"", "")));
             }
@@ -167,7 +177,7 @@ public class ServiceCheck {
 
             if(getpath.checkPathId(json.get("pathId").toString().replaceAll("\"", ""))
                     == true) {
-                //log.info("Condition True");
+                log.info("Condition True");
                 getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("srcIp").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("dstIp").toString().replaceAll("\"", ""),
@@ -175,6 +185,10 @@ public class ServiceCheck {
                         json.get("dtns").getAsJsonObject().get("dstPort").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("rate").getAsDouble());
 
+
+                log.info("Oath ID {}", json.get("pathId"));
+                getpath.calcPath(json.get("pathId").toString().replaceAll("\"", ""));
+                log.info("BW of New path {}", getpath.getPathBW(json.get("pathId").toString().replaceAll("\"", "")));
             }
             else {
                 log.info("Path ID not found");

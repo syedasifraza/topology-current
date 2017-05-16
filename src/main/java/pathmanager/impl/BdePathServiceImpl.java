@@ -1,8 +1,6 @@
 package pathmanager.impl;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import flowManager.api.AgentFlowService;
@@ -24,7 +22,6 @@ import pathmanager.SaveCalcPath;
 import pathmanager.api.BdePathService;
 import service.CostService;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -66,49 +63,53 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Override
     public void calcPath(String src) {
+        log.info("SRC {}", src);
         Map<String, Map<Collection<String>, Double>> pathInfo = new HashMap<>();
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode dtnIp;
-            dtnIp = mapper.readTree(src).get("ip");
-            IpAddress oneIp = IpAddress.valueOf(dtnIp.asText());
-            DeviceId dvcOneId = hostService.getHostsByIp(oneIp).iterator()
-                    .next().location().deviceId();
-            log.info("Host loacted in Device ID :" + dvcOneId);
 
-            Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
-            DeviceId dvcTwoId = multimap.keySet().iterator().next();
-            log.info("Gateways IDs: " + dvcTwoId);
+        //ObjectMapper mapper = new ObjectMapper();
+        //JsonNode dtnIp;
+        //dtnIp = mapper.readTree(src).get("ip");
+        //log.info("SRC {}", dtnIp.asText());
+        IpAddress oneIp = IpAddress.valueOf(src);
+        DeviceId dvcOneId = hostService.getHostsByIp(oneIp).iterator()
+                .next().location().deviceId();
+        log.info("Host loacted in Device ID :" + dvcOneId);
 
-            Iterator<TopologyEdge> edges = topologyService.getGraph(
-                    topologyService.currentTopology()).getEdges().iterator();
+        Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
+        DeviceId dvcTwoId = multimap.keySet().iterator().next();
+        log.info("Gateways IDs: " + dvcTwoId);
 
-            int size = topologyService.getGraph(
-                    topologyService.currentTopology()).getEdges().size();
-            final AgentGraph.Edge[] Graph = new AgentGraph.Edge[size];
-            Multimap<String, String> sd = ArrayListMultimap.create();
-            int i = 0;
+        Iterator<TopologyEdge> edges = topologyService.getGraph(
+                topologyService.currentTopology()).getEdges().iterator();
 
-            edges.forEachRemaining(n -> sd.put(n.src().toString(), n.dst().toString()));
-            for (Map.Entry<String, String> entry : sd.entries()) {
-                Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(),
-                        (int) costService.retriveCost(entry.getKey(), entry.getValue()));
-                i++;
-            }
+        int size = topologyService.getGraph(
+                topologyService.currentTopology()).getEdges().size();
+        final AgentGraph.Edge[] Graph = new AgentGraph.Edge[size];
+        Multimap<String, String> sd = ArrayListMultimap.create();
+        int i = 0;
 
-            final String START = dvcOneId.toString();
-            final String END = dvcTwoId.toString();
-            AgentGraph g = new AgentGraph(Graph);
-            g.dijkstra(START);
-            g.printPath(END);
-            pathInfo.put(mapper.readTree(src).get("ip").toString().replaceAll("\"", ""), g.getDvcInPath());
-            saveCalcPath.setPathInfo(pathInfo);
-            log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
-            //log.info("Devices in Path {}", g.getDvcInPath());
-            //pathLinks(g.getDvcInPath());
-        } catch (IOException e) {
-            e.printStackTrace();
+        edges.forEachRemaining(n -> sd.put(n.src().toString(), n.dst().toString()));
+        for (Map.Entry<String, String> entry : sd.entries()) {
+            Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(),
+                    (int) costService.retriveCost(entry.getKey(), entry.getValue()));
+            i++;
         }
+
+        final String START = dvcOneId.toString();
+        final String END = dvcTwoId.toString();
+        AgentGraph g = new AgentGraph(Graph);
+        g.cleanPath();
+        g.dijkstra(START);
+        g.printPath(END);
+        //log.info("Devices in Path {}", g.getDvcInPath());
+        //log.info("Path inform {}", pathInfo);
+        pathInfo.put(src, g.getDvcInPath());
+        saveCalcPath.setPathInfo(pathInfo);
+        //log.info("Devices in Path {}", g.getDvcInPath());
+        //pathLinks(g.getDvcInPath());
+
+        log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
+
 
     }
 
@@ -142,6 +143,7 @@ public class BdePathServiceImpl implements BdePathService {
         //log.info("src IP {} \n dst IP {} \n srcPort {}\n dstPort {}\n rate {}",
         //        srcIP, dstIP, srcPort, dstPort, rate);
         Multimap<DeviceId, Map<PortNumber, PortNumber>> portInfo = ArrayListMultimap.create();
+        log.info("In Setup path {}", saveCalcPath.getPathInfo());
         log.info("Path of given pathID {}", saveCalcPath.getPathInfo().get(pathId).keySet().
                 iterator().next().iterator().next());
         IpAddress hostIp = IpAddress.valueOf(pathId);
@@ -166,8 +168,12 @@ public class BdePathServiceImpl implements BdePathService {
 
 
         }
-
-        log.info("Iam out of for loop");
+        log.info("Current Available BW of Path {}", saveCalcPath.getPathInfo().get(pathId).
+                get(saveCalcPath.getPathInfo().get(pathId).keySet().iterator().next()).doubleValue());
+        //log.info("Required BW for Path {}", rate);
+        costService.changeCost(saveCalcPath.getPathInfo().get(pathId).keySet().
+                iterator().next(), rate);
+        log.info("Iam out of for loop {}", saveCalcPath.getPathInfo());
 
     }
 

@@ -7,5 +7,5 @@
     <property name="service.pid" value="flowManager.Impl.AgentFlowServiceImpl"/>
     <reference name="flowRuleService" interface="org.onosproject.net.flow.FlowRuleService" cardinality="1..1" policy="static" bind="bindFlowRuleService" unbind="unbindFlowRuleService"/>
     <reference name="initConfigService" interface="init.config.InitConfigService" cardinality="1..1" policy="static" bind="bindInitConfigService" unbind="unbindInitConfigService"/>
-    <reference name="coreService" interface="org.onosproject.core.CoreService" cardinality="1..1" policy="static" bind="bindCoreService" unbind="unbindCoreService"/>
+    <reference name="meterService" interface="org.onosproject.net.meter.MeterService" cardinality="1..1" policy="static" bind="bindMeterService" unbind="unbindMeterService"/>
 </scr:component>
