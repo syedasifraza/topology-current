@@ -128,12 +128,18 @@ public class BdePathServiceImpl implements BdePathService {
 
     @Override
     public boolean checkPathId(String pathId) {
+        log.info("before condition");
         //log.info("pathID recieved from json msg {}", pathId);
-        //log.info("pathId recieved from saved {}", saveCalcPath.getPathInfo().keySet().iterator().next().toString());
+        log.info("pathId recieved from saved {}", saveCalcPath.getPathInfo());
+        if(saveCalcPath.getPathInfo() == null) {
+            log.info("Return flase: if empty");
+            return false;
+        }
         if(pathId.equals(saveCalcPath.getPathInfo().keySet().iterator().next().toString().replaceAll("\"", ""))) {
-            //log.info("Now I started to install path on devices");
+            log.info("Return true: Now I started to install path on devices");
             return true;
         }
+        log.info("Return flase: Now I started to install path on devices");
         return false;
     }
 

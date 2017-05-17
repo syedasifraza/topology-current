@@ -54,10 +54,6 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         log.info("\n Device IDs {}, srcIP {}, dstIP {}, srcPort {}, dstPort {}, rate {}",
                 deviceId, srcIP, dstIP, srcPort, dstPort, rate);
 
-        pushFlows(deviceId, inPort, outPort,
-                srcIP, dstIP);
-        pushFlows(deviceId, outPort, inPort,
-                dstIP, srcIP);
 
         Band band = DefaultBand.builder()
                 .ofType(Band.Type.DROP)
@@ -71,7 +67,14 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .withBands(Collections.singleton(band))
                 .add();
 
+
         //meterService.submit(meterRequest);
+
+        pushFlows(deviceId, inPort, outPort,
+                srcIP, dstIP);
+        pushFlows(deviceId, outPort, inPort,
+                dstIP, srcIP);
+
     }
 
     @Override

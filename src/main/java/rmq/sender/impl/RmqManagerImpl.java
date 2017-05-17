@@ -96,10 +96,10 @@ public class RmqManagerImpl implements RmqManagerService {
                 conn = factory.newConnection();
             }
             channel = conn.createChannel();
-            channel.exchangeDeclare(exchangeName, type, true);
+            //channel.exchangeDeclare(exchangeName, type, true);
 
-            channel.queueDeclare(queueName, true, false, true, null);
-            channel.queueBind(queueName, exchangeName, routingKey);
+            channel.queueDeclare(queueName, false, false, false, null);
+            //channel.queueBind(queueName, exchangeName, routingKey);
         } catch (Exception e) {
             log.error(E_CREATE_CHAN, e);
         }

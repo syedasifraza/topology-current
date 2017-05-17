@@ -21,5 +21,6 @@ public interface RmqService
         extends ListenerService<RmqEvents, RmqMsgListener> {
     public void publish(byte[] body);
     public String consume();
+    public void consumerResponse(byte[] body);
 
 }

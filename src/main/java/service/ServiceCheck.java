@@ -103,7 +103,10 @@ public class ServiceCheck {
 
     private void msgRecieved() {
         JsonConverter(rmqService.consume());
-        //log.info(consume);
+        //byte[] body = null;
+        //log.info("Consumer Msg of Client {}", rmqService.consume());
+        //rmqService.consumerResponse(body);
+
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         log.info("Gateway ID: " + multimap);
         //getpath.calcPath(consume);
@@ -152,7 +155,7 @@ public class ServiceCheck {
         Map<String, Double> publishPathInfo = new HashMap<>();
         JsonParser parser = new JsonParser();
         JsonObject json = (JsonObject) parser.parse(messegeRecieved);
-        log.info("Command = " + json.get("cmd"));
+        //log.info("Command = " + json.get("cmd"));
         if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_probe")) {
             JsonArray jsonArray = (JsonArray) json.get("dtns");
             for (int i = 0; i < jsonArray.size(); i++) {
@@ -167,6 +170,7 @@ public class ServiceCheck {
                 getpath.calcPath(dtnIp.asText());
                 publishPathInfo.put(jsonArray.get(i).getAsJsonObject().get("ip").toString(),
                         getpath.getPathBW(jsonArray.get(i).getAsJsonObject().get("ip").toString().replaceAll("\"", "")));
+                log.info("pulishpathinfo done here....");
             }
             //publishPathInfo.put("10.0.0.2", 90.00);
             JsonPublishCoverter(json.get("taskId").toString().replaceAll("\"", ""),
@@ -185,16 +189,32 @@ public class ServiceCheck {
                         json.get("dtns").getAsJsonObject().get("dstPort").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("rate").getAsDouble());
 
-
                 log.info("Oath ID {}", json.get("pathId"));
                 getpath.calcPath(json.get("pathId").toString().replaceAll("\"", ""));
                 log.info("BW of New path {}", getpath.getPathBW(json.get("pathId").toString().replaceAll("\"", "")));
+
+                byte[] body = null;
+                JsonObject outer = new JsonObject();
+                outer.addProperty("PathSetup", "Successfully Done!");
+                body = bytesOf(outer);
+                rmqService.consumerResponse(body);
             }
             else {
+
+                byte[] body = null;
+                JsonObject outer = new JsonObject();
+                outer.addProperty("Error", "Given Path ID not found");
+                body = bytesOf(outer);
+                rmqService.consumerResponse(body);
                 log.info("Path ID not found");
             }
         }
         else {
+            byte[] body = null;
+            JsonObject outer = new JsonObject();
+            outer.addProperty("Error", "SDN Agnet not support given command");
+            body = bytesOf(outer);
+            rmqService.consumerResponse(body);
             log.info("command not found {}", messegeRecieved);
         }
 
@@ -219,7 +239,8 @@ public class ServiceCheck {
 
         outer.add("dtns", middle);
         body = bytesOf(outer);
-        rmqService.publish(body);
+        log.info("before consumer");
+        rmqService.consumerResponse(body);
         log.info("Publish msg {}", outer);
         //log.info("CMD recieved {}", cmd);
         //log.info("TaskID recieved {}", taskId);

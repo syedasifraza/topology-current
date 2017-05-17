@@ -30,6 +30,7 @@ import rmq.sender.api.RmqEvents;
 import rmq.sender.api.RmqManagerService;
 import rmq.sender.api.RmqMsgListener;
 import rmq.sender.api.RmqService;
+import rmq.sender.util.SaveConsumerReply;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +97,8 @@ public class RmqServiceImpl
     protected ExecutorService eventExecutor;
 
     private ApplicationId appId;
+    SaveConsumerReply saveConsumerReply = new SaveConsumerReply();
+
 
     @Activate
     protected void activate(ComponentContext context) {
@@ -224,18 +227,66 @@ public class RmqServiceImpl
                 public void handleDelivery(String consumerTag, Envelope envelope,
                                            AMQP.BasicProperties properties, byte[] body)
                         throws IOException {
+
+
+                    AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                            .Builder()
+                            .correlationId(properties.getCorrelationId())
+                            .build();
+
                     String message = new String(body, "UTF-8");
                     log.info(" [x] Recieved: '{}'", message);
                     processRecievedMessage(body);
+                    saveConsumerReply.setReplyProp(replyProps);
+                    saveConsumerReply.setProperties(properties);
+                    saveConsumerReply.setEnvelope(envelope);
                     post(new RmqEvents(RmqEvents.Type.RMQ_MSG_RECIEVED, message));
                     log.info(" [x] Recieved after post: '{}'", message);
+                    //consumerResponse(replyProps, properties, envelope);
                 }
             };
-            channel_c.basicConsume(queueName_c, true, consumer);
+            channel_c.basicConsume(queueName_c, false, consumer);
         } catch (Exception e) {
             log.error(E_PUBLISH_CHAN, e);
         }
     }
+
+    public void consumerResponse(AMQP.BasicProperties replyProps,
+                                 AMQP.BasicProperties properties,
+                                 Envelope envelope) {
+        MessageContext input = msgInQueue.poll();
+        byte[] body = null;
+        JsonObject outer = new JsonObject();
+        outer.addProperty("cmd", "sdn_response--new");
+        body = bytesOf(outer);
+
+        try {
+            channel_c.basicPublish("", properties.getReplyTo(),
+                    replyProps, body);
+            channel_c.basicAck(envelope.getDeliveryTag(), false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("Reply sent back to client");
+        log.info("Polled msg {}", input);
+
+    }
+
+
+    @Override
+    public void consumerResponse(byte[] body) {
+
+        try {
+            channel_c.basicPublish("", saveConsumerReply.getProperties().getReplyTo(),
+                    saveConsumerReply.getReplyProp(), body);
+            channel_c.basicAck(saveConsumerReply.getEnvelpe().getDeliveryTag(), false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.info("Reply sent back to client");
+
+    }
+
 
     private void processRecievedMessage(byte[] body) {
         MessageContext mc = new MessageContext(body);
