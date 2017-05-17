@@ -68,7 +68,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .add();
 
 
-        //meterService.submit(meterRequest);
+        meterService.submit(meterRequest);
 
         pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP);
