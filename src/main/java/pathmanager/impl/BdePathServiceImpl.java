@@ -11,6 +11,7 @@ import org.onosproject.net.ConnectPoint;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.HostId;
 import org.onosproject.net.PortNumber;
+import org.onosproject.net.device.DeviceService;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.topology.TopologyEdge;
 import org.onosproject.net.topology.TopologyService;
@@ -48,6 +49,9 @@ public class BdePathServiceImpl implements BdePathService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected AgentFlowService agentFlowService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected DeviceService deviceService;
+
     SaveCalcPath saveCalcPath= new SaveCalcPath();
 
     @Activate
@@ -71,6 +75,7 @@ public class BdePathServiceImpl implements BdePathService {
         //dtnIp = mapper.readTree(src).get("ip");
         //log.info("SRC {}", dtnIp.asText());
         IpAddress oneIp = IpAddress.valueOf(src);
+        log.info("got ip values of device");
         DeviceId dvcOneId = hostService.getHostsByIp(oneIp).iterator()
                 .next().location().deviceId();
         log.info("Host loacted in Device ID :" + dvcOneId);
@@ -78,37 +83,52 @@ public class BdePathServiceImpl implements BdePathService {
         Multimap<DeviceId, ConnectPoint> multimap = initConfigService.gatewaysInfo();
         DeviceId dvcTwoId = multimap.keySet().iterator().next();
         log.info("Gateways IDs: " + dvcTwoId);
+        if (dvcOneId.toString().equals(dvcTwoId.toString())) {
+            Collection<String> device = new LinkedHashSet<>();
+            Map<Collection<String>, Double> dvcWithCost = new HashMap<>();
+            double portspeed1, portspeed2;
+            portspeed1 = deviceService.getPort(dvcTwoId,
+                    multimap.get(dvcTwoId).iterator().next().port()).portSpeed();
+            portspeed2 = deviceService.getPort(dvcOneId,
+                    hostService.getHostsByIp(oneIp).iterator().next().location().port()).portSpeed();
 
-        Iterator<TopologyEdge> edges = topologyService.getGraph(
-                topologyService.currentTopology()).getEdges().iterator();
-
-        int size = topologyService.getGraph(
-                topologyService.currentTopology()).getEdges().size();
-        final AgentGraph.Edge[] Graph = new AgentGraph.Edge[size];
-        Multimap<String, String> sd = ArrayListMultimap.create();
-        int i = 0;
-
-        edges.forEachRemaining(n -> sd.put(n.src().toString(), n.dst().toString()));
-        for (Map.Entry<String, String> entry : sd.entries()) {
-            Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(),
-                    (int) costService.retriveCost(entry.getKey(), entry.getValue()));
-            i++;
+            device.add(dvcOneId.toString());
+            dvcWithCost.put(device, Math.min(portspeed1, portspeed2));
+            pathInfo.put(src, dvcWithCost);
+            saveCalcPath.setPathInfo(pathInfo);
         }
+        else {
+            Iterator<TopologyEdge> edges = topologyService.getGraph(
+                    topologyService.currentTopology()).getEdges().iterator();
+            log.info("after edges");
+            int size = topologyService.getGraph(
+                    topologyService.currentTopology()).getEdges().size();
+            final AgentGraph.Edge[] Graph = new AgentGraph.Edge[size];
+            Multimap<String, String> sd = ArrayListMultimap.create();
+            int i = 0;
+            log.info("after topology service get graph");
+            edges.forEachRemaining(n -> sd.put(n.src().toString(), n.dst().toString()));
+            for (Map.Entry<String, String> entry : sd.entries()) {
+                Graph[i] = new AgentGraph.Edge(entry.getKey(), entry.getValue(),
+                        (int) costService.retriveCost(entry.getKey(), entry.getValue()));
+                i++;
+            }
 
-        final String START = dvcOneId.toString();
-        final String END = dvcTwoId.toString();
-        AgentGraph g = new AgentGraph(Graph);
-        g.cleanPath();
-        g.dijkstra(START);
-        g.printPath(END);
-        //log.info("Devices in Path {}", g.getDvcInPath());
-        //log.info("Path inform {}", pathInfo);
-        pathInfo.put(src, g.getDvcInPath());
-        saveCalcPath.setPathInfo(pathInfo);
-        //log.info("Devices in Path {}", g.getDvcInPath());
-        //pathLinks(g.getDvcInPath());
+            final String START = dvcOneId.toString();
+            final String END = dvcTwoId.toString();
+            AgentGraph g = new AgentGraph(Graph);
+            g.cleanPath();
+            g.dijkstra(START);
+            g.printPath(END);
+            //log.info("Devices in Path {}", g.getDvcInPath());
+            //log.info("Path inform {}", pathInfo);
+            pathInfo.put(src, g.getDvcInPath());
+            saveCalcPath.setPathInfo(pathInfo);
+            //log.info("Devices in Path {}", g.getDvcInPath());
+            //pathLinks(g.getDvcInPath());
 
-        log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
+            log.info("Calculated Path: {}", saveCalcPath.getPathInfo());
+        }
 
 
     }
