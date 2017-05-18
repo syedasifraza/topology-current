@@ -68,7 +68,9 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .add();
 
 
-        meterService.submit(meterRequest);
+        MeterId meterId;
+        meterId = meterService.submit(meterRequest).id();
+        log.info("Meter Id", meterId);
 
         pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP);
@@ -110,6 +112,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .build();
         rules.add(addRule);
         flowRuleService.apply(rules.build());
+
         log.info("Flow id {} @ device Id {}", addRule.id().toString(), deviceId);
     }
 }
