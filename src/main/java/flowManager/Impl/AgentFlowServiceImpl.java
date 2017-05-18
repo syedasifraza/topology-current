@@ -63,6 +63,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         MeterRequest meterRequest = DefaultMeterRequest.builder()
                 .forDevice(deviceId)
                 .fromApp(appId)
+                .burst()
                 .withUnit(Meter.Unit.KB_PER_SEC)
                 .withBands(Collections.singleton(band))
                 .add();
@@ -73,9 +74,9 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         log.info("Meter Id {}", meterId);
 
         pushFlows(deviceId, inPort, outPort,
-                srcIP, dstIP);
+                srcIP, dstIP, meterId);
         pushFlows(deviceId, outPort, inPort,
-                dstIP, srcIP);
+                dstIP, srcIP, meterId);
 
     }
 
@@ -85,9 +86,10 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     }
 
     public void pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
-                          String srcIP, String dstIP) {
+                          String srcIP, String dstIP, MeterId meterId) {
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
                 .setOutput(outPort)
+                .meter(meterId)
                 .build();
 
         TrafficSelector.Builder sbuilder;
