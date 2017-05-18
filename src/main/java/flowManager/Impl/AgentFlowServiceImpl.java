@@ -34,9 +34,6 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected MeterService meterService;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
-    protected Meter meter;
-
     ApplicationId appId;
     @Activate
     protected void activate(ComponentContext context) {
@@ -90,7 +87,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         pushFlows(deviceId, outPort, inPort,
                 dstIP, srcIP, meterId);
 
-        log.info("Meters {}", meter.appId());
+        //log.info("Meters {}", meter.appId());
 
     }
 
