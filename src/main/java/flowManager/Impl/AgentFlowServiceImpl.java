@@ -70,7 +70,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
 
         MeterId meterId;
         meterId = meterService.submit(meterRequest).id();
-        log.info("Meter Id", meterId);
+        log.info("Meter Id {}", meterId);
 
         pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP);
