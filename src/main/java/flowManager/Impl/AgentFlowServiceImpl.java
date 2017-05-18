@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @Component(immediate = true)
 @Service
@@ -44,6 +45,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
 
     @Deactivate
     protected void deactivate() {
+
         log.info("Flow Manager Stopped");
     }
 
@@ -72,6 +74,11 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         MeterId meterId;
         meterId = meterService.submit(meterRequest).id();
         log.info("Meter Id {}", meterId);
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP, meterId);

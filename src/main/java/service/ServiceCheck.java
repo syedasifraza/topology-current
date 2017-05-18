@@ -92,6 +92,7 @@ public class ServiceCheck {
 
     @Deactivate
     protected void deactivate() {
+        agentFlowService.removeFlowsByAppId();
         log.info("Stopped");
     }
 
