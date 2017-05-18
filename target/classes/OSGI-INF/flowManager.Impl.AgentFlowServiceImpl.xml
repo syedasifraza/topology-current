@@ -8,4 +8,5 @@
     <reference name="flowRuleService" interface="org.onosproject.net.flow.FlowRuleService" cardinality="1..1" policy="static" bind="bindFlowRuleService" unbind="unbindFlowRuleService"/>
     <reference name="initConfigService" interface="init.config.InitConfigService" cardinality="1..1" policy="static" bind="bindInitConfigService" unbind="unbindInitConfigService"/>
     <reference name="meterService" interface="org.onosproject.net.meter.MeterService" cardinality="1..1" policy="static" bind="bindMeterService" unbind="unbindMeterService"/>
+    <reference name="meter" interface="org.onosproject.net.meter.Meter" cardinality="1..1" policy="static" bind="bindMeter" unbind="unbindMeter"/>
 </scr:component>

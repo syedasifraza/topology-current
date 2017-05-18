@@ -34,6 +34,9 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected MeterService meterService;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected Meter meter;
+
     ApplicationId appId;
     @Activate
     protected void activate(ComponentContext context) {
@@ -61,6 +64,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .burstSize(rate.longValue())
                 .withRate(rate.longValue())
                 .build();
+
         MeterRequest meterRequest = DefaultMeterRequest.builder()
                 .forDevice(deviceId)
                 .fromApp(appId)
@@ -78,11 +82,15 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+        //meterService.withdraw(meterRequest, meterId);
+
 
         pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP, meterId);
         pushFlows(deviceId, outPort, inPort,
                 dstIP, srcIP, meterId);
+
+        log.info("Meters {}", meter.appId());
 
     }
 
