@@ -88,8 +88,9 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     public void pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
                           String srcIP, String dstIP, MeterId meterId) {
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
-                .setOutput(outPort)
                 .meter(meterId)
+                .setQueue(7)
+                .setOutput(outPort)
                 .build();
 
         TrafficSelector.Builder sbuilder;
