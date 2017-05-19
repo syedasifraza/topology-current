@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.Set;
 
 @Component(immediate = true)
 @Service
@@ -34,6 +35,8 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected MeterService meterService;
 
+
+
     ApplicationId appId;
     @Activate
     protected void activate(ComponentContext context) {
@@ -51,11 +54,12 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     @Override
     public void installFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
                              String srcIP, String dstIP,
-                             String srcPort, String dstPort, Double rate) {
+                             String srcPort, String dstPort, Double rate, Set<FlowId> fId) {
         log.info("\n Device IDs {}, srcIP {}, dstIP {}, srcPort {}, dstPort {}, rate {}",
                 deviceId, srcIP, dstIP, srcPort, dstPort, rate);
 
-
+        FlowId fId1;
+        FlowId fId2;
         Band band = DefaultBand.builder()
                 .ofType(Band.Type.DROP)
                 .burstSize(rate.longValue())
@@ -71,23 +75,25 @@ public class AgentFlowServiceImpl implements AgentFlowService {
                 .add();
 
 
-        MeterId meterId;
-        meterId = meterService.submit(meterRequest).id();
-        log.info("Meter Id {}", meterId);
+        MeterId meterId = MeterId.meterId(10);
+        //meterId = meterService.submit(meterRequest).id();
+        //log.info("Meter Id {}", meterId);
         /*try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
-        //meterService.withdraw(meterRequest, meterId);
 
 
-        pushFlows(deviceId, inPort, outPort,
+
+        fId1 = pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP, meterId);
-        pushFlows(deviceId, outPort, inPort,
+        fId2 = pushFlows(deviceId, outPort, inPort,
                 dstIP, srcIP, meterId);
 
         //log.info("Meters {}", meter.appId());
+        fId.add(fId1);
+        fId.add(fId2);
 
     }
 
@@ -96,11 +102,9 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         flowRuleService.removeFlowRulesById(appId);
     }
 
-    public void pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
+    public FlowId pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
                           String srcIP, String dstIP, MeterId meterId) {
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
-                .meter(meterId)
-                .setQueue(7)
                 .setOutput(outPort)
                 .build();
 
@@ -127,6 +131,8 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         rules.add(addRule);
         flowRuleService.apply(rules.build());
 
+
         log.info("Flow id {} @ device Id {}", addRule.id().toString(), deviceId);
+        return addRule.id();
     }
 }

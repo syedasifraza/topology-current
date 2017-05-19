@@ -2,7 +2,9 @@ package pathmanager.impl;
 
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import flowManager.api.AgentFlowService;
 import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
@@ -12,6 +14,7 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.HostId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceService;
+import org.onosproject.net.flow.FlowId;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.topology.TopologyEdge;
 import org.onosproject.net.topology.TopologyService;
@@ -19,6 +22,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pathmanager.AgentGraph;
+import pathmanager.PathIds;
 import pathmanager.SaveCalcPath;
 import pathmanager.api.BdePathService;
 import service.CostService;
@@ -53,7 +57,8 @@ public class BdePathServiceImpl implements BdePathService {
     protected DeviceService deviceService;
 
     SaveCalcPath saveCalcPath= new SaveCalcPath();
-
+    Map<Integer, List<PathIds>> t = new LinkedHashMap<>();
+    int ids = 0;
     @Activate
     protected void activate(ComponentContext context) {
 
@@ -168,10 +173,13 @@ public class BdePathServiceImpl implements BdePathService {
                           String srcPort, String dstPort, Double rate) {
         //log.info("src IP {} \n dst IP {} \n srcPort {}\n dstPort {}\n rate {}",
         //        srcIP, dstIP, srcPort, dstPort, rate);
+
+        List<PathIds> g = Lists.newArrayList();
         Multimap<DeviceId, Map<PortNumber, PortNumber>> portInfo = ArrayListMultimap.create();
         log.info("In Setup path {}", saveCalcPath.getPathInfo());
         log.info("Path of given pathID {}", saveCalcPath.getPathInfo().get(pathId).keySet().
                 iterator().next().iterator().next());
+
         IpAddress hostIp = IpAddress.valueOf(pathId);
         HostId hostId = hostService.getHostsByIp(hostIp).iterator().next().id();
         PortNumber hostPort = hostService.getHost(hostId).location().port();
@@ -181,6 +189,8 @@ public class BdePathServiceImpl implements BdePathService {
                 iterator().next(), hostPort);
 
         for(DeviceId items: portInfo.keySet()) {
+
+            Set<FlowId> fId = Sets.newHashSet();
             PortNumber inPort;
             PortNumber outPort;
 
@@ -189,17 +199,31 @@ public class BdePathServiceImpl implements BdePathService {
                 outPort = portInfo.get(items).iterator().next().get(inPort);
                 log.info("Device {}, inport {}, outport {}", items, inPort, outPort);
                 agentFlowService.installFlows(items, inPort, outPort, srcIP,
-                        dstIP, srcPort, dstPort, rate);
+                        dstIP, srcPort, dstPort, rate, fId);
             }
-
+            g.add(new PathIds(items, fId));
 
         }
+        t.put(ids, g);
         log.info("Current Available BW of Path {}", saveCalcPath.getPathInfo().get(pathId).
                 get(saveCalcPath.getPathInfo().get(pathId).keySet().iterator().next()).doubleValue());
         //log.info("Required BW for Path {}", rate);
         costService.changeCost(saveCalcPath.getPathInfo().get(pathId).keySet().
                 iterator().next(), rate);
         log.info("Iam out of for loop {}", saveCalcPath.getPathInfo());
+
+
+        for(Integer k: t.keySet()) {
+            log.info("Path ID={}", k);
+            t.get(k).iterator().forEachRemaining(p -> {
+                log.info("\ndevices {}", p.dvcIds());
+                log.info("\nflows IDs {}", p.flwIds());
+            });
+        }
+
+        
+        ids = ids + 1;
+
 
     }
 
