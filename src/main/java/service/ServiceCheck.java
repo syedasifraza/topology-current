@@ -187,8 +187,9 @@ public class ServiceCheck {
 
             if(getpath.checkPathId(json.get("pathId").toString().replaceAll("\"", ""))
                     == true) {
+                long pathId;
                 log.info("Condition True");
-                getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""),
+                pathId = getpath.setupPath(json.get("pathId").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("srcIp").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("dstIp").toString().replaceAll("\"", ""),
                         json.get("dtns").getAsJsonObject().get("srcPort").toString().replaceAll("\"", ""),
@@ -201,7 +202,8 @@ public class ServiceCheck {
 
                 byte[] body = null;
                 JsonObject outer = new JsonObject();
-                outer.addProperty("PathSetup", "Successfully Done!");
+                outer.addProperty("PathSatus", "Successfully Done!");
+                outer.addProperty("PathId", pathId);
                 body = bytesOf(outer);
                 rmqService.consumerResponse(body);
             }

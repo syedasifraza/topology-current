@@ -2,7 +2,6 @@ package flowManager.api;
 
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
-import org.onosproject.net.flow.FlowId;
 
 import java.util.Set;
 
@@ -11,7 +10,7 @@ import java.util.Set;
  */
 public interface AgentFlowService {
     public void installFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort, String srcIP, String dstIP,
-                             String srcPort, String dstPort, Double rate, Set<FlowId> fId);
+                             String srcPort, String dstPort, Double rate, Set<Long> fId);
 
     public void removeFlowsByAppId();
 }

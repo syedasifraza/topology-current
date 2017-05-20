@@ -1,7 +1,6 @@
 package pathmanager;
 
 import org.onosproject.net.DeviceId;
-import org.onosproject.net.flow.FlowId;
 
 import java.util.Objects;
 import java.util.Set;
@@ -12,10 +11,10 @@ import java.util.Set;
 public class PathIds {
 
     private final DeviceId deviceIds;
-    private final Set<FlowId> flowIds;
+    private final Set<Long> flowIds;
 
 
-    public PathIds(DeviceId deviceIds, Set<FlowId> flowIds) {
+    public PathIds(DeviceId deviceIds, Set<Long> flowIds) {
         this.deviceIds = deviceIds;
         this.flowIds = flowIds;
 
@@ -26,7 +25,7 @@ public class PathIds {
     }
 
 
-    public Set<FlowId> flwIds() {
+    public Set<Long> flwIds() {
         return flowIds;
     }
 

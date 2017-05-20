@@ -14,7 +14,6 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.HostId;
 import org.onosproject.net.PortNumber;
 import org.onosproject.net.device.DeviceService;
-import org.onosproject.net.flow.FlowId;
 import org.onosproject.net.host.HostService;
 import org.onosproject.net.topology.TopologyEdge;
 import org.onosproject.net.topology.TopologyService;
@@ -57,8 +56,8 @@ public class BdePathServiceImpl implements BdePathService {
     protected DeviceService deviceService;
 
     SaveCalcPath saveCalcPath= new SaveCalcPath();
-    Map<Integer, List<PathIds>> t = new LinkedHashMap<>();
-    int ids = 0;
+    Map<Long, List<PathIds>> t = new LinkedHashMap<>();
+    long ids = 0;
     @Activate
     protected void activate(ComponentContext context) {
 
@@ -169,7 +168,7 @@ public class BdePathServiceImpl implements BdePathService {
     }
 
     @Override
-    public void setupPath(String pathId, String srcIP, String dstIP,
+    public Long setupPath(String pathId, String srcIP, String dstIP,
                           String srcPort, String dstPort, Double rate) {
         //log.info("src IP {} \n dst IP {} \n srcPort {}\n dstPort {}\n rate {}",
         //        srcIP, dstIP, srcPort, dstPort, rate);
@@ -190,7 +189,7 @@ public class BdePathServiceImpl implements BdePathService {
 
         for(DeviceId items: portInfo.keySet()) {
 
-            Set<FlowId> fId = Sets.newHashSet();
+            Set<Long> fId = Sets.newHashSet();
             PortNumber inPort;
             PortNumber outPort;
 
@@ -213,7 +212,7 @@ public class BdePathServiceImpl implements BdePathService {
         log.info("Iam out of for loop {}", saveCalcPath.getPathInfo());
 
 
-        for(Integer k: t.keySet()) {
+        for(Long k: t.keySet()) {
             log.info("Path ID={}", k);
             t.get(k).iterator().forEachRemaining(p -> {
                 log.info("\ndevices {}", p.dvcIds());
@@ -221,8 +220,9 @@ public class BdePathServiceImpl implements BdePathService {
             });
         }
 
-        
+
         ids = ids + 1;
+        return (ids - 1);
 
 
     }

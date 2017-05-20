@@ -54,12 +54,12 @@ public class AgentFlowServiceImpl implements AgentFlowService {
     @Override
     public void installFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
                              String srcIP, String dstIP,
-                             String srcPort, String dstPort, Double rate, Set<FlowId> fId) {
+                             String srcPort, String dstPort, Double rate, Set<Long> fId) {
         log.info("\n Device IDs {}, srcIP {}, dstIP {}, srcPort {}, dstPort {}, rate {}",
                 deviceId, srcIP, dstIP, srcPort, dstPort, rate);
 
-        FlowId fId1;
-        FlowId fId2;
+        Long fId1, fId2;
+
         Band band = DefaultBand.builder()
                 .ofType(Band.Type.DROP)
                 .burstSize(rate.longValue())
@@ -85,7 +85,6 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         }*/
 
 
-
         fId1 = pushFlows(deviceId, inPort, outPort,
                 srcIP, dstIP, meterId);
         fId2 = pushFlows(deviceId, outPort, inPort,
@@ -94,6 +93,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         //log.info("Meters {}", meter.appId());
         fId.add(fId1);
         fId.add(fId2);
+        fId.add(meterId.id());
 
     }
 
@@ -102,7 +102,7 @@ public class AgentFlowServiceImpl implements AgentFlowService {
         flowRuleService.removeFlowRulesById(appId);
     }
 
-    public FlowId pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
+    public Long pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
                           String srcIP, String dstIP, MeterId meterId) {
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
                 .setOutput(outPort)
@@ -133,6 +133,6 @@ public class AgentFlowServiceImpl implements AgentFlowService {
 
 
         log.info("Flow id {} @ device Id {}", addRule.id().toString(), deviceId);
-        return addRule.id();
+        return addRule.id().value();
     }
 }
