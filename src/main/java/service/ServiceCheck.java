@@ -217,6 +217,23 @@ public class ServiceCheck {
                 log.info("Path ID not found");
             }
         }
+        else if (json.get("cmd").toString().replaceAll("\"", "").equals("sdn_release")) {
+            log.info("Release command {}", messegeRecieved);
+            boolean pathStatus;
+            pathStatus = getpath.releasePathId(json.get("pathId").getAsLong());
+            byte[] body = null;
+            JsonObject outer = new JsonObject();
+            if(pathStatus == true) {
+                outer.addProperty("PathSatus", "Path Released!!");
+                body = bytesOf(outer);
+                rmqService.consumerResponse(body);
+            }
+            else {
+                outer.addProperty("PathSatus", "Error to release path");
+                body = bytesOf(outer);
+                rmqService.consumerResponse(body);
+            }
+        }
         else {
             byte[] body = null;
             JsonObject outer = new JsonObject();

@@ -13,4 +13,6 @@ public interface AgentFlowService {
                              String srcPort, String dstPort, Double rate, Set<Long> fId);
 
     public void removeFlowsByAppId();
+
+    public void removePathId(DeviceId deviceId, Set<Long> flowId);
 }

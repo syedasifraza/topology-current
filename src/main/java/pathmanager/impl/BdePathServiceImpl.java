@@ -189,7 +189,7 @@ public class BdePathServiceImpl implements BdePathService {
 
         for(DeviceId items: portInfo.keySet()) {
 
-            Set<Long> fId = Sets.newHashSet();
+            Set<Long> fId = Sets.newLinkedHashSet();
             PortNumber inPort;
             PortNumber outPort;
 
@@ -220,10 +220,25 @@ public class BdePathServiceImpl implements BdePathService {
             });
         }
 
-
         ids = ids + 1;
         return (ids - 1);
 
+    }
+
+    @Override
+    public boolean releasePathId(Long pathId) {
+        if(t.keySet().contains(pathId)) {
+            log.info("Path ID in Map");
+            t.get(pathId).iterator().forEachRemaining( p -> {
+                agentFlowService.removePathId(p.dvcIds(), p.flwIds());
+            });
+            t.remove(pathId);
+            return true;
+        }
+        else {
+            log.info("Path ID is not in Map");
+            return false;
+        }
 
     }
 

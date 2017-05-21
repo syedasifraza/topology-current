@@ -9,4 +9,5 @@ public interface BdePathService {
     public boolean checkPathId(String pathId);
     public Long setupPath(String pathId, String srcIP, String dstIP,
                           String srcPort, String dstPort, Double rate);
+    public boolean releasePathId(Long pathId);
 }

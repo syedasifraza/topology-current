@@ -5,6 +5,7 @@ import init.config.InitConfigService;
 import org.apache.felix.scr.annotations.*;
 import org.onlab.packet.IpAddress;
 import org.onlab.packet.IpPrefix;
+import org.onlab.util.ItemNotFoundException;
 import org.onosproject.core.ApplicationId;
 import org.onosproject.net.DeviceId;
 import org.onosproject.net.PortNumber;
@@ -15,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
 @Component(immediate = true)
 @Service
@@ -99,7 +102,35 @@ public class AgentFlowServiceImpl implements AgentFlowService {
 
     @Override
     public void removeFlowsByAppId() {
+
         flowRuleService.removeFlowRulesById(appId);
+
+    }
+
+    @Override
+    public void removePathId(DeviceId deviceId, Set<Long> flowId) {
+
+        long fId1, fId2, meterId;
+        final Iterator<Long> flows = flowId.iterator();
+        final Iterable<FlowEntry> flowEntries =
+                flowRuleService.getFlowEntries(deviceId);
+
+        fId1 = flows.next();
+        fId2 = flows.next();
+
+        if (!flowEntries.iterator().hasNext()) {
+            throw new ItemNotFoundException("Device not found");
+        }
+
+        StreamSupport.stream(flowEntries.spliterator(), false)
+                .filter(entry -> entry.id().value() == fId1)
+                .forEach(flowRuleService::removeFlowRules);
+
+        StreamSupport.stream(flowEntries.spliterator(), false)
+                .filter(entry -> entry.id().value() == fId2)
+                .forEach(flowRuleService::removeFlowRules);
+
+
     }
 
     public Long pushFlows(DeviceId deviceId, PortNumber inPort, PortNumber outPort,
